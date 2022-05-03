@@ -1,0 +1,27 @@
+{
+  "name": "Proyecto-Final-Repo",
+  "version": "1.0.0",
+  "description": "En esta rama se encuentran las pruebas para hacer funcionar el robot con la IA para implmenentarlo despues en la pagina web.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alextiintor/Proyecto-Final.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alextiintor/Proyecto-Final/issues"
+  },
+  "homepage": "https://github.com/Alextiintor/Proyecto-Final#readme",
+  "dependencies": {
+    "@mediapipe/hands": "^0.4.1646424915",
+    "@tensorflow-models/hand-pose-detection": "^2.0.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.16.0",
+    "@tensorflow/tfjs-converter": "^3.16.0",
+    "@tensorflow/tfjs-core": "^3.16.0"
+  }
+}
