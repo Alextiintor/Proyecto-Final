@@ -1,5 +1,5 @@
 # Rama de configuración de la IA
-En esta rama están el código relacionado con la detección de las manos y los gestos de nuestra aplicación, ademas de 
+En esta rama están el código relacionado con la detección de las manos y los gestos de nuestra aplicación, ademas de enviar instrucciones al robot.
 
 ## Para instalar: 
 `npm install / npm i`
