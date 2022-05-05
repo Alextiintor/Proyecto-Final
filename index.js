@@ -81,13 +81,15 @@ async function main() {
           //Si hay gestos, pone el nombre del gesto en un div
           let gestureName = estimatedGesture.gestures[0].name;
 
-          //gestureName = smoothGesture(gestureName, gesturesCounter)
-          result.textContent = gestureName;
+          let finalGestureName = smoothGesture(gestureName)
+          //console.log(smoothGesture(gestureName));
+          result.textContent = finalGestureName;
           //Envia las instrucciones al robot.
           sendInstructions(gestureName)
         } else {
           //Si no hay ningun gesto pone en el div que esta en "idle"
           result.textContent = "idle"
+          sendInstructions("idle")
         }
 
       });
@@ -99,29 +101,43 @@ async function main() {
   estimateHands();
 }
 
-function smoothGesture(gestureName, gesturesCounter){
-  gesturesCounter[gestureName]++;
-  if(gesturesCounter[gestureName] == 3){
-    console.log("Entro en el if");
-    gesturesCounter = {
-      downAxis: 0,
-      upAxis: 0,
+let lastGesture = "";
+let gestureDuration = 0;
+
+function smoothGesture(gestureName){
+
+  if(gestureName != null){
+    if(gestureName == lastGesture){
+      gestureDuration++;
+    } else {
+      lastGesture = gestureName;
+      gestureDuration = 0;
     }
-    console.log(gestureName);
+  } else {
+    lastGesture = "";
+    gestureDuration = 0;
+  }
+
+  if(gestureDuration < 3){
+    return ""
+  } else {
     return gestureName;
   }
+
 }
 
 //Funcion para enviar las instrucciones al robot
 function sendInstructions(gesture){
   if(gesture == "downAxis"){
-    console.log("Send downAxis");
+    socket.emit("clientMovesRobot", gesture)
   } else if (gesture == "upAxis"){
-    console.log("Send upAxis");
+    socket.emit("clientMovesRobot", gesture)
   } else if (gesture == "moveLeft"){
-    console.log("Send moveLeft");
+    socket.emit("clientMovesRobot", gesture)
   } else if (gesture == "moveRight"){
-    console.log("Send moveRight");
+    socket.emit("clientMovesRobot", gesture)
+  } else {
+    socket.emit("clientMovesRobot", "idle")
   }
 }
 
