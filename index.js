@@ -6,7 +6,7 @@ import '@mediapipe/drawing_utils';
 import * as fp from "fingerpose";
 import * as robotGestures from './Gestures/index'
 import { io } from 'socket.io-client'
-const socket = io("https://localhost:8000");
+const socket = io("localhost:8000");
 
 //Configuracion de la camara
 const config = {
