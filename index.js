@@ -8,8 +8,13 @@ import * as robotGestures from './Gestures/index'
 
 //Configuracion de la camara
 const config = {
-  video: { width: 250, height: 200, fps: 30 }
+  video: { width: 350, height: 300, fps: 30 }
 };
+
+let gesturesCounter = {
+  downAxis: 0,
+  upAxis: 0
+}
 
 async function main() {
   //Obtener elementos
@@ -40,10 +45,11 @@ async function main() {
 
   const estimateHands = async () => {
     //Limpiar el canvas
+
     ctx.clearRect(0, 0, config.video.width, config.video.height);
 
     //Configurar el detector de manos
-    const estimationConfig = {flipHorizontal: true};
+    const estimationConfig = {flipHorizontal: true /*Girar el detector horizontal mente*/};
     const predictions = await detector.estimateHands(video, estimationConfig);
 
     //Array con las cordenadas de los puntos de la mano 
@@ -72,6 +78,8 @@ async function main() {
         if(estimatedGesture.gestures[0]){
           //Si hay gestos, pone el nombre del gesto en un div
           let gestureName = estimatedGesture.gestures[0].name;
+
+          //gestureName = smoothGesture(gestureName, gesturesCounter)
           result.textContent = gestureName;
           //Envia las instrucciones al robot.
           sendInstructions(gestureName)
@@ -87,6 +95,19 @@ async function main() {
     setTimeout(() => { estimateHands(); }, 1000 / config.video.fps)
   }
   estimateHands();
+}
+
+function smoothGesture(gestureName, gesturesCounter){
+  gesturesCounter[gestureName]++;
+  if(gesturesCounter[gestureName] == 3){
+    console.log("Entro en el if");
+    gesturesCounter = {
+      downAxis: 0,
+      upAxis: 0,
+    }
+    console.log(gestureName);
+    return gestureName;
+  }
 }
 
 //Funcion para enviar las instrucciones al robot

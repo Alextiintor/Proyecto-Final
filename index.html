@@ -8,14 +8,21 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h1>Prueba</h1>
-    <div class="video">
-      <div id="video-container">
-        <video id="pose-video" class="layer" playsinline></video>
-        <canvas id="pose-canvas" class="layer"></canvas>
+    <div class="app">
+      <iframe src="http://192.168.16.230:1234" frameborder="0" height="100%" width="100%"></iframe>
+      <div class="ai-info">
+        <div class="video">
+          <video id="pose-video" class="layer" playsinline></video>
+          <canvas id="pose-canvas" class="layer"></canvas>
+        </div>
+        
       </div>
+      <div id="pose-result" class="layer">
+        <h1 id="result"></h1>
+      </div>
+      
     </div>
-    <div id="pose-result" class="layer"><h1 id="result"></h1></div>
-    <script type="module" src="/index.js"></script>
+    
+    <script type="module" src="./index.js"></script>
   </body>
 </html>
