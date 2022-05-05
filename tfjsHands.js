@@ -6,6 +6,7 @@ import '@mediapipe/drawing_utils';
 import * as fp from "fingerpose";
 import * as robotGestures from './Gestures/index'
 
+//Configuracion de la camara
 const config = {
   video: { width: 250, height: 200, fps: 30 }
 };
@@ -45,27 +46,37 @@ async function main() {
     const estimationConfig = {flipHorizontal: true};
     const predictions = await detector.estimateHands(video, estimationConfig);
 
-    //Recorrer las predicciones y pintar en el canvas las manos
+    //Array con las cordenadas de los puntos de la mano 
     let handKeyPoints = [];
-
+    //Recorrer las predicciones y pintar en el canvas las manos
     if(predictions.length != 0){
       predictions.forEach(hand => {
         hand.keypoints.forEach(keypoint => {
+          //Diferenciar manos visualmente
           if(hand.handedness == "Left"){
+            //Si la mano es la izquierda pinta los puntos de la mano en azul
             drawPoint(ctx, keypoint.x, keypoint.y, 3, "blue")
           } else {
+            //Si es derecha los pinta en rojo
             drawPoint(ctx, keypoint.x, keypoint.y, 3, "red")
           }
+          // Hacer que las cordenadas 2D sean "3D"
           keypoint.z = 0;
+          //Se rellena el array con las cordenadas de los puntos de la mano
           handKeyPoints.push([keypoint.x, keypoint.y, keypoint.z]);
         })
 
-        //console.log(handKeyPoints);
         const estimatedGesture = GE.estimate(handKeyPoints, 9)
-        //result.textContent = estimatedGesture.getstures[0]
+
+        //Compreba si hay gestos
         if(estimatedGesture.gestures[0]){
-          result.textContent = estimatedGesture.gestures[0].name;
+          //Si hay gestos, pone el nombre del gesto en un div
+          let gestureName = estimatedGesture.gestures[0].name;
+          result.textContent = gestureName;
+          //Envia las instrucciones al robot.
+          sendInstructions(gestureName)
         } else {
+          //Si no hay ningun gesto pone en el div que esta en "idle"
           result.textContent = "idle"
         }
 
@@ -78,74 +89,20 @@ async function main() {
   estimateHands();
 }
 
+//Funcion para enviar las instrucciones al robot
+function sendInstructions(gesture){
+  if(gesture == "downAxis"){
+    console.log("Send downAxis");
+  } else if (gesture == "upAxis"){
+    console.log("Send upAxis");
+  } else if (gesture == "moveLeft"){
+    console.log("Send moveLeft");
+  } else if (gesture == "moveRight"){
+    console.log("Send moveRight");
+  }
+}
 
-
-// async function main() {
-
-//   const video = document.querySelector("#pose-video");
-//   const canvas = document.querySelector("#pose-canvas");
-//   const ctx = canvas.getContext("2d");
-
-//   const resultLayer = document.querySelector("#pose-result");
-
-//   // configure gesture estimator
-//   // add "✌🏻" and "👍" as sample gestures
-//   const knownGestures = [
-//     fp.Gestures.VictoryGesture,
-//     fp.Gestures.ThumbsUpGesture
-//   ];
-//   const GE = new fp.GestureEstimator(knownGestures);
-
-
-
-//   // main estimation loop
-//   const estimateHands = async () => {
-
-//     // clear canvas overlay
-//     ctx.clearRect(0, 0, config.video.width, config.video.height);
-//     resultLayer.innerText = '';
-
-//     // get hand landmarks from video
-//     // Note: Handpose currently only detects one hand at a time
-//     // Therefore the maximum number of predictions is 1
-//     const predictions = await model.estimateHands(video, true);
-
-//     for(let i = 0; i < predictions.length; i++) {
-
-//       // draw colored dots at each predicted joint position
-//       for(let part in predictions[i].annotations) {
-//         for(let point of predictions[i].annotations[part]) {
-//           drawPoint(ctx, point[0], point[1], 3, landmarkColors[part]);
-//         }
-//       }
-
-//       // estimate gestures based on landmarks
-//       // using a minimum score of 9 (out of 10)
-//       // gesture candidates with lower score will not be returned
-//       const est = GE.estimate(predictions[i].landmarks, 9);
-
-//       if(est.gestures.length > 0) {
-
-//         // find gesture with highest match score
-//         let result = est.gestures.reduce((p, c) => { 
-//           return (p.score > c.score) ? p : c;
-//         });
-
-//         resultLayer.innerText = gestureStrings[result.name];
-//       }
-
-//       // update debug info
-//       updateDebugInfo(est.poseData);
-//     }
-
-//     // ...and so on
-//     setTimeout(() => { estimateHands(); }, 1000 / config.video.fps);
-//   };
-
-//   estimateHands();
-//   console.log("Starting predictions");
-// }
-
+//Funcion para inciar la camara
 async function initCamera(width, height, fps) {
 
   const constraints = {
@@ -171,6 +128,7 @@ async function initCamera(width, height, fps) {
   });
 }
 
+//Funcion para pintar los puntos de la mano
 function drawPoint(ctx, x, y, r, color) {
   ctx.beginPath();
   ctx.arc(x, y, r, 0, 2 * Math.PI);
