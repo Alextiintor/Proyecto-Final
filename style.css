@@ -13,7 +13,7 @@ canvas {
   position: absolute;
 }
 
-iframe { 
+.robot { 
   position: absolute; 
   float: left; 
   clear: both;  
@@ -22,12 +22,11 @@ iframe {
 
 .ai-info{
   position: absolute;
-  right: 600px;
-  display: flex;
+  right: 350px;
 }
 
 #pose-result{
   position: absolute;
   top: 300px;
-  left: 760px;
+  left: calc(100% - 350px);
 }
