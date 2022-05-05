@@ -19,7 +19,12 @@
     "@tensorflow/tfjs-backend-webgl": "^3.16.0",
     "@tensorflow/tfjs-converter": "^3.16.0",
     "@tensorflow/tfjs-core": "^3.16.0",
+    "@types/dat.gui": "^0.7.7",
+    "dat.gui": "^0.7.9",
     "fingerpose": "^0.1.0",
-    "socket.io-client": "^4.5.0"
+    "public": "^0.1.5",
+    "regenerator-runtime": "^0.13.9",
+    "socket.io-client": "^4.5.0",
+    "three": "^0.140.0"
   }
 }

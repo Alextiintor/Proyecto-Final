@@ -6,7 +6,10 @@ import '@mediapipe/drawing_utils';
 import * as fp from "fingerpose";
 import * as robotGestures from './Gestures/index'
 import { io } from 'socket.io-client'
+
 const socket = io("localhost:8000");
+window.lastMovement = Date.now();
+window.finalGestureName = "idle"
 
 //Configuracion de la camara
 const config = {
@@ -75,21 +78,22 @@ async function main() {
         })
 
         const estimatedGesture = GE.estimate(handKeyPoints, 9)
-
         //Compreba si hay gestos
         if(estimatedGesture.gestures[0]){
           //Si hay gestos, pone el nombre del gesto en un div
           let gestureName = estimatedGesture.gestures[0].name;
 
-          let finalGestureName = smoothGesture(gestureName)
+          window.finalGestureName = smoothGesture(gestureName)
           //console.log(smoothGesture(gestureName));
-          result.textContent = finalGestureName;
+          result.textContent = window.finalGestureName;
           //Envia las instrucciones al robot.
-          sendInstructions(gestureName)
+          moveLocalRobot(window.finalGestureName)
+          sendInstructions(window.finalGestureName)
         } else {
           //Si no hay ningun gesto pone en el div que esta en "idle"
           result.textContent = "idle"
           sendInstructions("idle")
+          moveLocalRobot("idle")
         }
 
       });
@@ -118,12 +122,81 @@ function smoothGesture(gestureName){
     gestureDuration = 0;
   }
 
-  if(gestureDuration < 3){
+  if(gestureDuration < 5){
     return ""
   } else {
     return gestureName;
   }
 
+}
+
+function moveLocalRobot(gestureName){
+  //Gloabl
+  window.lastMovement = Date.now();
+
+  if(gestureName == "downAxis"){
+    if(window.downAxisCount == 0){
+      changeAxis(-1);
+      window.downAxisCount+=1
+    }
+    if(window.upAxisCount > 0) window.upAxisCount = 0
+  } else if (gestureName == "upAxis"){
+    if(window.upAxisCount == 0){
+      changeAxis(1);
+      window.upAxisCount+=1
+    }
+    if(window.downAxisCount > 0) window.downAxisCount = 0
+  } else if (gestureName == "moveLeft"){
+    window.downAxisCount = 0
+    window.upAxisCount = 0
+    if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
+      window.rotate_y_right = false;
+      window.rotate_y_left = true;
+    } else {
+      window.rotate_z_right = false;
+      window.rotate_z_left = true;
+    }
+
+  } else if (gestureName == "moveRight"){
+    window.downAxisCount = 0
+    window.upAxisCount = 0
+    if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
+      window.rotate_y_left = false;
+      window.rotate_y_right = true;
+    } else {
+      window.rotate_z_left = false;
+      window.rotate_z_right = true;
+    }
+  } else {
+    window.downAxisCount = 0
+    window.upAxisCount = 0
+    window.rotate_y_left = false;
+    window.rotate_y_right = false;
+    window.rotate_z_left = false;
+    window.rotate_z_right = false;
+  }
+
+}
+
+function changeAxis(num){
+  let axis = ["ArmBase2","2","3","4","5",]
+  let nextAxis = window.actualAxisIndex + num;
+
+  console.log(nextAxis);
+  
+  
+  if (nextAxis == 5) {
+    window.actualAxis = axis[0]
+    window.actualAxisIndex = 0;
+  } else if (nextAxis == -1) {
+    window.actualAxis = axis[4]
+    window.actualAxisIndex = 4
+  } else {
+    window.actualAxis = axis[nextAxis]
+    window.actualAxisIndex = nextAxis
+  }
+  // console.log(window.actualAxis);
+  // console.log(window.actualAxisIndex);
 }
 
 //Funcion para enviar las instrucciones al robot
