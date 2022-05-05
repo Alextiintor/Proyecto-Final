@@ -1,8 +1,11 @@
 import upAxis from "./UpAxis"
 import downAxis from "./DownAxis"
-//UpAxis / DownAxis
+import moveLeft from "./MoveLeft"
+import moveRight from "./MoveRight"
 
 export {
     upAxis,
-    downAxis
+    downAxis,
+    moveLeft,
+    moveRight
 }

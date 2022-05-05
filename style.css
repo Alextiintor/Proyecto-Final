@@ -7,7 +7,18 @@
   margin-top: 60px;
 }
 
+.video{
+  width: 200px;
+  height: 200px;
+}
+
 video {
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
+  position: absolute;
 }
+
+canvas {
+  position: absolute;
+}
+
