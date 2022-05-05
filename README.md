@@ -1,10 +1,8 @@
-# Rama de configuracion de la IA
-Primero clonar repositorio,
+# Rama de configuración de la IA
+En esta rama están el código relacionado con la detección de las manos y los gestos de nuestra aplicación, ademas de 
 
-Una vez dentro:
-
-Para instalar: 
+## Para instalar: 
 `npm install / npm i`
 
-Para ejecutar:
+## Para ejecutar:
 `npm run dev`
