@@ -1,32 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Robot-Ai</h1>
-    <div id="stats"></div>
-    <div id="main">
-        <div class="container">
-            <div class="canvas-wrapper">
-                <canvas id="output"></canvas>
-                <video id="video" playsinline style="
-                -webkit-transform: scaleX(-1);
-                transform: scaleX(-1);
-                visibility: hidden;
-                width: auto;
-                height: auto;
-                ">
-                </video>
-            </div>
-            <div id="scatter-gl-container-left"></div>
-        </div>
-        <div id="scatter-gl-container-right"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Prueba</h1>
+    <div class="video">
+      <div id="video-container">
+        <video id="pose-video" class="layer" playsinline></video>
+        <canvas id="pose-canvas" class="layer"></canvas>
+        <div id="pose-result" class="layer"></div>
+      </div>
     </div>
-
-    <script type="module" src="./index.js"></script>
-</body>
+    <script type="module" src="/tfjsHands.js"></script>
+  </body>
 </html>

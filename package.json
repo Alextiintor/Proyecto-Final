@@ -1,34 +1,24 @@
 {
-  "name": "robot-ai-branch",
-  "version": "1.0.0",
-  "description": "En esta rama se encuentran las pruebas para hacer funcionar el robot con la IA para implmenentarlo despues en la pagina web.",
-  "main": "index.js",
+  "name": "hand-ai",
+  "private": true,
+  "version": "0.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
-
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Alextiintor/Proyecto-Final.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Alextiintor/Proyecto-Final/issues"
-  },
-  "homepage": "https://github.com/Alextiintor/Proyecto-Final#readme",
-  "dependencies": {
-    "@mediapipe/hands": "^0.4.1646424915",
-    "@tensorflow-models/hand-pose-detection": "^2.0.0",
-    "@tensorflow/tfjs-backend-webgl": "^3.16.0",
-    "@tensorflow/tfjs-converter": "^3.16.0",
-    "@tensorflow/tfjs-core": "^3.16.0"
   },
   "devDependencies": {
     "vite": "^2.9.7"
+  },
+  "dependencies": {
+    "@mediapipe/drawing_utils": "^0.3.1620248257",
+    "@mediapipe/hands": "^0.4.1646424915",
+    "@tensorflow-models/hand-pose-detection": "^2.0.0",
+    "@tensorflow-models/handpose": "0.0.7",
+    "@tensorflow/tfjs-backend-wasm": "^3.16.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.16.0",
+    "@tensorflow/tfjs-converter": "^3.16.0",
+    "@tensorflow/tfjs-core": "^3.16.0",
+    "fingerpose": "^0.1.0"
   }
 }
