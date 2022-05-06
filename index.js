@@ -10,6 +10,13 @@ import { io } from 'socket.io-client'
 //const socket = io("localhost:8000");
 window.lastMovement = Date.now();
 window.finalGestureName = "idle"
+window.leftHandGesture = "idle";
+window.rightHandGesture = "idle";
+
+const video = document.querySelector("#pose-video");
+const canvas = document.querySelector("#pose-canvas");
+const ctx = canvas.getContext("2d");
+const result = document.querySelector("#result")
 
 let detecting2Hands = false;
 let estimatedFirstHandGesture;
@@ -37,15 +44,6 @@ let gesturesCounter = {
 }
 
 async function main() {
-  //Obtener elementos
-  const video = document.querySelector("#pose-video");
-  const canvas = document.querySelector("#pose-canvas");
-  const ctx = canvas.getContext("2d");
-  const result = document.querySelector("#result")
-
-
-
-
   //Cargar modelo
   const model = await handPoseDetection.SupportedModels.MediaPipeHands;
   const detectorConfig = {
@@ -68,46 +66,36 @@ async function main() {
 
     //Recorrer las predicciones y pintar en el canvas las manos
     if(predictions.length != 0){
+      //Funcion para establecer los puntos de ambas manos
       setHandsKeyPoints(predictions);
 
-      //console.log(detecting2Hands);
+      //Diferenciar entre si hay una mano en pantalla o 2
       if(detecting2Hands){
         detect2Hands();
       } else {
         detect1Hand();
       }
 
-      predictions.forEach(hand => {
-        hand.keypoints.forEach(keypoint => {
-          //Diferenciar manos visualmente
-          if(hand.handedness == "Left"){
-            //Si la mano es la izquierda pinta los puntos de la mano en azul
-            drawPoint(ctx, keypoint.x, keypoint.y, 3, "blue")
-          } else {
-            //Si es derecha los pinta en rojo
-            drawPoint(ctx, keypoint.x, keypoint.y, 3, "red")
-          }
-        })
+      drawHandsPoints(predictions);
+      moveLocalRobot();
 
-        // //Compreba si hay gestos
-        // if(estimatedGesture.gestures[0]){
-        //   //Si hay gestos, pone el nombre del gesto en un div
-        //   let gestureName = estimatedGesture.gestures[0].name;
+      // //Comprueba si hay gestos
+      // if(estimatedGesture.gestures[0]){
+      //   //Si hay gestos, pone el nombre del gesto en un div
+      //   let gestureName = estimatedGesture.gestures[0].name;
 
-        //   window.finalGestureName = smoothGesture(gestureName)
-        //   //console.log(smoothGesture(gestureName));
-        //   result.textContent = window.finalGestureName;
-        //   //Envia las instrucciones al robot.
-        //   moveLocalRobot(window.finalGestureName)
-        //   sendInstructions(window.finalGestureName)
-        // } else {
-        //   //Si no hay ningun gesto pone en el div que esta en "idle"
-        //   result.textContent = "idle"
-        //   sendInstructions("idle")
-        //   moveLocalRobot("idle")
-        // }
-
-      });
+      //   window.finalGestureName = smoothGesture(gestureName)
+      //   //console.log(smoothGesture(gestureName));
+      //   result.textContent = window.finalGestureName;
+      //   //Envia las instrucciones al robot.
+      //   moveLocalRobot(window.finalGestureName)
+      //   sendInstructions(window.finalGestureName)
+      // } else {
+      //   //Si no hay ningun gesto pone en el div que esta en "idle"
+      //   result.textContent = "idle"
+      //   sendInstructions("idle")
+      //   moveLocalRobot("idle")
+      // }
     }
 
     //Crear loop
@@ -117,6 +105,7 @@ async function main() {
 }
 
 function setHandsKeyPoints(predictions){
+    //Establecer puntos de la primera mano
     let firstHandKeypoints = predictions[0].keypoints;
     let firstHandKeypointsArray = [];
     firstHandKeypoints.forEach(keypoint => {
@@ -124,10 +113,12 @@ function setHandsKeyPoints(predictions){
       firstHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
     })
 
+    
     let secondHandKeypoints;
     let secondHandKeypointsArray = [];
-    //console.log(predictions);
+
     if(predictions[1]){
+      //Establecer puntos de la segunda mano
       detecting2Hands = true
       secondHandKeypoints = predictions[1].keypoints
 
@@ -135,9 +126,12 @@ function setHandsKeyPoints(predictions){
         keypoint.z = 0;
         secondHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
       });
+      
+      //Estimar gestos de ambas manos
       estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
       estimatedSecondHandGesture = GE.estimate(secondHandKeypointsArray, 9)
     } else {
+      //Estimar gestos de la primera mano
       detecting2Hands = false;
       estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
     }
@@ -170,6 +164,8 @@ function detect1Hand(){
   console.log(firstHandGesture);
 }
 
+
+
 let lastGesture = "";
 let gestureDuration = 0;
 
@@ -195,23 +191,23 @@ function smoothGesture(gestureName){
 
 }
 
-function moveLocalRobot(gestureName){
+function moveLocalRobot(){
   //Gloabl
   window.lastMovement = Date.now();
 
-  if(gestureName == "downAxis"){
+  if(firstHandGesture == "downAxis" || secondHandGesture == "downAxis"){
     if(window.downAxisCount == 0){
       changeAxis(-1);
       window.downAxisCount+=1
     }
     if(window.upAxisCount > 0) window.upAxisCount = 0
-  } else if (gestureName == "upAxis"){
+  } else if (firstHandGesture == "upAxis" || secondHandGesture == "upAxis"){
     if(window.upAxisCount == 0){
       changeAxis(1);
       window.upAxisCount+=1
     }
     if(window.downAxisCount > 0) window.downAxisCount = 0
-  } else if (gestureName == "moveLeft"){
+  } else if (firstHandGesture == "moveLeft" || secondHandGesture == "moveLeft"){
     window.downAxisCount = 0
     window.upAxisCount = 0
     if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
@@ -221,8 +217,7 @@ function moveLocalRobot(gestureName){
       window.rotate_z_right = false;
       window.rotate_z_left = true;
     }
-
-  } else if (gestureName == "moveRight"){
+  } else if (firstHandGesture == "moveRight" || secondHandGesture == "moveRight"){
     window.downAxisCount = 0
     window.upAxisCount = 0
     if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
@@ -311,6 +306,21 @@ function drawPoint(ctx, x, y, r, color) {
   ctx.arc(x, y, r, 0, 2 * Math.PI);
   ctx.fillStyle = color;
   ctx.fill();
+}
+
+function drawHandsPoints(predictions){
+  predictions.forEach(hand => {
+    hand.keypoints.forEach(keypoint => {
+      //Diferenciar manos visualmente
+      if(hand.handedness == "Left"){
+        //Si la mano es la izquierda pinta los puntos de la mano en azul
+        drawPoint(ctx, keypoint.x, keypoint.y, 3, "blue")
+      } else {
+        //Si es derecha los pinta en rojo
+        drawPoint(ctx, keypoint.x, keypoint.y, 3, "red")
+      }
+    })
+  });
 }
 
 window.addEventListener("DOMContentLoaded", () => {
