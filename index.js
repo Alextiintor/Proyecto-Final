@@ -73,7 +73,7 @@ async function main() {
       //Diferenciar entre si hay una mano en pantalla o 2
       if(detecting2Hands){
         detect2Hands();
-      } else {
+      } else if (!detecting2Hands) {
         detect1Hand();
       }
 
@@ -97,6 +97,9 @@ async function main() {
       //   sendInstructions("idle")
       //   moveLocalRobot("idle")
       // }
+    } else {
+      left_result.textContent = "Mano Izquierda no detectada"
+      right_result.textContent = "Mano Derecha no detectada"
     }
 
     //Crear loop
@@ -114,6 +117,7 @@ function setHandsKeyPoints(predictions){
     let rightHandKeypointsArray = [];
     let leftPrediction = null;
     let rightPrediction = null;
+
     if(predictions.length==2){//hay dos manos
       detecting2Hands = true
       /**
@@ -153,6 +157,7 @@ function setHandsKeyPoints(predictions){
       }
 
       if(leftPrediction){
+        estimatedRightHandGesture = null
         leftHandKeypoints= leftPrediction.keypoints;
         leftHandKeypoints.forEach(keypoint => {
           keypoint.z = 0;
@@ -160,6 +165,7 @@ function setHandsKeyPoints(predictions){
         })
         estimatedLeftHandGesture = GE.estimate(leftHandKeypointsArray, 9)
       } else if (rightPrediction){
+        estimatedLeftHandGesture = null
         rightHandKeypoints= rightPrediction.keypoints;
         rightHandKeypoints.forEach(keypoint => {
           keypoint.z = 0;
@@ -168,7 +174,6 @@ function setHandsKeyPoints(predictions){
         estimatedRightHandGesture = GE.estimate(rightHandKeypointsArray, 9)
       }
     }
-    console.log(detecting2Hands);
     // let secondHandKeypoints;
     // let secondHandKeypointsArray = [];
 
@@ -193,9 +198,7 @@ function setHandsKeyPoints(predictions){
 }
 
 function detect2Hands(){
-  console.log("detect2Hands");
   if(estimatedLeftHandGesture.gestures[0] && estimatedRightHandGesture.gestures[0]){
-    console.log("Dos gestos");
     leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name) 
     rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
   } else if (estimatedLeftHandGesture.gestures[0]){
@@ -210,20 +213,21 @@ function detect2Hands(){
   }
   left_result.textContent = leftHandGesture
   right_result.textContent = rightHandGesture
-  //console.log(rightHandGesture + " " + leftHandGesture);
 }
 
 function detect1Hand(){
   if (estimatedLeftHandGesture){
     if(estimatedLeftHandGesture.gestures[0]){
       leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name)
+      rightHandGesture = "Mano derecha no detectada"
+    } else {
+      leftHandGesture = "idle"
     }
   } else if (estimatedRightHandGesture){
-    console.log("IF derecha");
     if(estimatedRightHandGesture.gestures[0]){
-      console.log("segundo if derecha");
       rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
-      console.log(rightHandGesture);
+    } else {
+      rightHandGesture = "idle"
     }
   } else {
     leftHandGesture = "idle"
@@ -231,7 +235,6 @@ function detect1Hand(){
   }
   left_result.textContent = leftHandGesture
   right_result.textContent = rightHandGesture
-  console.log(leftHandGesture);
 }
 
 let leftLastGesture = "";
@@ -272,7 +275,7 @@ function rightSmoothGesture(gestureName){
     rightGestureDuration = 0;
   }
 
-  if(rightGestureDuration < 5){
+  if(rightGestureDuration < 3){
   } else {
     return gestureName;
   }
