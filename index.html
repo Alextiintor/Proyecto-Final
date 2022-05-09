@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app">
+      <!-- <iframe class="robot" src="http://192.168.16.230:1234" frameborder="0" height="100%" width="100%"></iframe> -->
+
+      <div id="robot"></div>
+      <div id="controls"></div>
+
+      <div class="ai-info">
+        <div class="video">
+          <video id="pose-video" class="layer" playsinline></video>
+          <canvas id="pose-canvas" class="layer"></canvas>
+        </div>
+      </div>
+
+      <div id="pose-result" class="layer">
+        <h1 id="left_result" style="color: blue;"></h1>
+        <h1 id="right_result" style="color: red;"></h1>
+      </div>
+      
+    </div>
+    
+    <script type="module" src="./index.js"></script>
+    <script type="module" src="./robot.js"></script>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "hand-ai",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.9.7"
+  },
+  "dependencies": {
+    "@mediapipe/drawing_utils": "^0.3.1620248257",
+    "@mediapipe/hands": "^0.4.1646424915",
+    "@tensorflow-models/hand-pose-detection": "^2.0.0",
+    "@tensorflow-models/handpose": "0.0.7",
+    "@tensorflow/tfjs-backend-wasm": "^3.16.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.16.0",
+    "@tensorflow/tfjs-converter": "^3.16.0",
+    "@tensorflow/tfjs-core": "^3.16.0",
+    "@types/dat.gui": "^0.7.7",
+    "dat.gui": "^0.7.9",
+    "fingerpose": "^0.1.0",
+    "public": "^0.1.5",
+    "regenerator-runtime": "^0.13.9",
+    "socket.io-client": "^4.5.0",
+    "three": "^0.140.0"
+  }
+}
