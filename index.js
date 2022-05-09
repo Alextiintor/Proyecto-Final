@@ -26,24 +26,29 @@ let estimatedRightHandGesture;
 let leftHandGesture;
 let rightHandGesture;
 
+let isStoped = false;
+
 const fullGestures = [
   robotGestures.downAxis,
   robotGestures.upAxis,
   robotGestures.moveLeft,
   robotGestures.moveRight,
-  robotGestures.stop
+  robotGestures.stop,
+  robotGestures.resume
 ]
 
 const rightGestures = [
   robotGestures.moveLeft,
   robotGestures.moveRight,
-  robotGestures.stop
+  robotGestures.stop,
+  robotGestures.resume
 ];
 
 const leftGestures = [
   robotGestures.downAxis,
   robotGestures.upAxis,
-  robotGestures.stop
+  robotGestures.stop,
+  robotGestures.resume
 ];
 
 const fullGE = new fp.GestureEstimator(fullGestures);
@@ -93,6 +98,7 @@ async function main() {
       }
 
       drawHandsPoints(predictions);
+      checkStop();
       moveLocalRobot();
       //result.textContent = window.finalGestureName;
       // //Comprueba si hay gestos
@@ -121,6 +127,14 @@ async function main() {
     setTimeout(() => { estimateHands(); }, 1000 / config.video.fps)
   }
   estimateHands();
+}
+
+function checkStop(){
+  if(leftHandGesture == "stop" || rightHandGesture == "stop"){
+    isStoped = true
+  } else if (leftHandGesture == "resume"  || rightHandGesture == "resume") {
+    isStoped = false
+  }
 }
 
 function setHandsKeyPoints(predictions){
@@ -299,6 +313,10 @@ function rightSmoothGesture(gestureName){
 function moveLocalRobot(){
   //Gloabl
   window.lastMovement = Date.now();
+
+  if(isStoped){
+    return
+  }
 
   if(leftHandGesture == "downAxis" || rightHandGesture == "downAxis"){
     if(window.downAxisCount == 0){
