@@ -22,6 +22,19 @@ window.rotate_y_right = false;
 window.rotate_z_left = false;
 window.rotate_z_right = false;
 
+window.last_move_robot = {
+    axis: "ArmBase2",
+    axisIndex: 0,
+    y: 0,
+    z: 0
+}
+
+window.actual_move_robot = {
+    axis: "ArmBase2",
+    axisIndex: 0,
+    y: 0,
+    z: 0
+}
 
 window.actualAxis = "ArmBase2"
 window.actualAxisIndex = 0
@@ -137,28 +150,44 @@ let look_z = 0;
         loop();
     });
     var loop = function () {
+        let posPivot = 0;
         // camera.lookAt(look_x, look_y, look_z);
-        if (window.actualAxis=="ArmBase2") {
+        if (window.actualAxisIndex==0) {
             if(window.rotate_y_left == true){
                 window.robot_parts[window.actualAxis].rotation.y+=0.01;
             }
             if(window.rotate_y_right == true){
                 window.robot_parts[window.actualAxis].rotation.y-=0.01;
             }
+            
+            window.actual_move_robot = {
+                axis: window.actualAxis,
+                axisIndex: window.actualAxisIndex,
+                y: window.robot_parts[window.actualAxis].rotation.y,
+                z: window.robot_parts[window.actualAxis].rotation.z
+            }
+
         } else {
-            let posPivot = window.robot_parts["ArmBase"+window.actualAxis].children.length -1;
+            posPivot = window.robot_parts[window.actualAxis].children.length -1;
 
             if(window.rotate_y_left == true){
-                window.robot_parts["ArmBase"+window.actualAxis].children[posPivot].rotation.y+=0.01;
+                window.robot_parts[window.actualAxis].children[posPivot].rotation.y+=0.01;
             }
             if(window.rotate_y_right == true){
-                window.robot_parts["ArmBase"+window.actualAxis].children[posPivot].rotation.y-=0.01;
+                window.robot_parts[window.actualAxis].children[posPivot].rotation.y-=0.01;
             }
             if(window.rotate_z_left == true){
-                window.robot_parts["ArmBase"+window.actualAxis].children[posPivot].rotation.z+=0.01;
+                window.robot_parts[window.actualAxis].children[posPivot].rotation.z+=0.01;
             }
             if(window.rotate_z_right == true){
-                window.robot_parts["ArmBase"+window.actualAxis].children[posPivot].rotation.z-=0.01;
+                window.robot_parts[window.actualAxis].children[posPivot].rotation.z-=0.01;
+            }
+
+            window.actual_move_robot = {
+                axis: window.actualAxis,
+                axisIndex: window.actualAxisIndex,
+                y: window.robot_parts[window.actualAxis].children[posPivot].rotation.y,
+                z: window.robot_parts[window.actualAxis].children[posPivot].rotation.z
             }
         }
         if(Date.now() - window.lastMovement > 100){
@@ -170,6 +199,7 @@ let look_z = 0;
             //document.querySelector("#result").textContent = window.finalGestureName
         }
 
+        
 
         requestAnimationFrame(loop);
         renderer.render(scene, camera);

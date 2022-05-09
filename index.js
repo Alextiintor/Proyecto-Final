@@ -18,6 +18,7 @@ const canvas = document.querySelector("#pose-canvas");
 const ctx = canvas.getContext("2d");
 const left_result = document.querySelector("#left_result")
 const right_result = document.querySelector("#right_result")
+let createdIntervalMoveRobot = false;
 
 let detecting2Hands = false;
 let estimatedLeftHandGesture;
@@ -322,11 +323,20 @@ function moveLocalRobot(){
     window.rotate_z_left = false;
     window.rotate_z_right = false;
   }
+  
+  moveRemoteRobot()
+  if (createdIntervalMoveRobot==false) {
+    createdIntervalMoveRobot = true;
+    var moveRobotInterval = window.setInterval(moveRemoteRobot(), 3000);
+  }
+}
 
+function moveRemoteRobot(){
+  
 }
 
 function changeAxis(num){
-  let axis = ["ArmBase2","2","3","4","5",]
+  let axis = ["ArmBase2","ArmBase2","ArmBase3","ArmBase4","ArmBase5",]
   let nextAxis = window.actualAxisIndex + num;
 
   window.rotate_y_left = false;
