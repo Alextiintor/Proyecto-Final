@@ -26,14 +26,29 @@ let estimatedRightHandGesture;
 let leftHandGesture;
 let rightHandGesture;
 
-const knownGestures = [
+const fullGestures = [
   robotGestures.downAxis,
   robotGestures.upAxis,
   robotGestures.moveLeft,
-  robotGestures.moveRight
-];
-const GE = new fp.GestureEstimator(knownGestures);
+  robotGestures.moveRight,
+  robotGestures.stop
+]
 
+const rightGestures = [
+  robotGestures.moveLeft,
+  robotGestures.moveRight,
+  robotGestures.stop
+];
+
+const leftGestures = [
+  robotGestures.downAxis,
+  robotGestures.upAxis,
+  robotGestures.stop
+];
+
+const fullGE = new fp.GestureEstimator(fullGestures);
+const leftGE = new fp.GestureEstimator(leftGestures);
+const rightGE = new fp.GestureEstimator(rightGestures);
 //Configuracion de la camara
 const config = {
   video: { width: 350, height: 300, fps: 30 }
@@ -145,8 +160,8 @@ function setHandsKeyPoints(predictions){
         rightHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
       })
 
-      estimatedLeftHandGesture = GE.estimate(leftHandKeypointsArray, 9)
-      estimatedRightHandGesture = GE.estimate(rightHandKeypointsArray, 9)
+      estimatedLeftHandGesture = leftGE.estimate(leftHandKeypointsArray, 9)
+      estimatedRightHandGesture = rightGE.estimate(rightHandKeypointsArray, 9)
       
     }else{//hay una mano
       detecting2Hands = false
@@ -163,7 +178,7 @@ function setHandsKeyPoints(predictions){
           keypoint.z = 0;
           leftHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
         })
-        estimatedLeftHandGesture = GE.estimate(leftHandKeypointsArray, 9)
+        estimatedLeftHandGesture = fullGE.estimate(leftHandKeypointsArray, 9)
       } else if (rightPrediction){
         estimatedLeftHandGesture = null
         rightHandKeypoints= rightPrediction.keypoints;
@@ -171,7 +186,7 @@ function setHandsKeyPoints(predictions){
           keypoint.z = 0;
           rightHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
         })
-        estimatedRightHandGesture = GE.estimate(rightHandKeypointsArray, 9)
+        estimatedRightHandGesture = fullGE.estimate(rightHandKeypointsArray, 9)
       }
     }
     // let secondHandKeypoints;
