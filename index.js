@@ -131,6 +131,7 @@ async function main() {
 
 function checkStop(){
   if(leftHandGesture == "stop" || rightHandGesture == "stop"){
+    stopMove();
     isStoped = true
   } else if (leftHandGesture == "resume"  || rightHandGesture == "resume") {
     isStoped = false
@@ -351,14 +352,18 @@ function moveLocalRobot(){
       window.rotate_z_right = true;
     }
   } else {
-    window.downAxisCount = 0
-    window.upAxisCount = 0
-    window.rotate_y_left = false;
-    window.rotate_y_right = false;
-    window.rotate_z_left = false;
-    window.rotate_z_right = false;
+    stopMove();
   }
 
+}
+
+function stopMove(){
+  window.downAxisCount = 0
+  window.upAxisCount = 0
+  window.rotate_y_left = false;
+  window.rotate_y_right = false;
+  window.rotate_z_left = false;
+  window.rotate_z_right = false;
 }
 
 function changeAxis(num){
