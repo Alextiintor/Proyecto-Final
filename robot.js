@@ -167,7 +167,7 @@ let look_z = 0;
             window.rotate_z_right = false;
             window.rotate_z_left = false;
             window.finalGestureName = "idle"
-            document.querySelector("#result").textContent = window.finalGestureName
+            //document.querySelector("#result").textContent = window.finalGestureName
         }
 
 

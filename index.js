@@ -16,14 +16,15 @@ window.rightHandGesture = "idle";
 const video = document.querySelector("#pose-video");
 const canvas = document.querySelector("#pose-canvas");
 const ctx = canvas.getContext("2d");
-const result = document.querySelector("#result")
+const left_result = document.querySelector("#left_result")
+const right_result = document.querySelector("#right_result")
 
 let detecting2Hands = false;
-let estimatedFirstHandGesture;
-let estimatedSecondHandGesture;
+let estimatedLeftHandGesture;
+let estimatedRightHandGesture;
 
-let firstHandGesture;
-let secondHandGesture;
+let leftHandGesture;
+let rightHandGesture;
 
 const knownGestures = [
   robotGestures.downAxis,
@@ -78,7 +79,7 @@ async function main() {
 
       drawHandsPoints(predictions);
       moveLocalRobot();
-
+      //result.textContent = window.finalGestureName;
       // //Comprueba si hay gestos
       // if(estimatedGesture.gestures[0]){
       //   //Si hay gestos, pone el nombre del gesto en un div
@@ -106,108 +107,194 @@ async function main() {
 
 function setHandsKeyPoints(predictions){
     //Establecer puntos de la primera mano
-    let firstHandKeypoints = predictions[0].keypoints;
-    let firstHandKeypointsArray = [];
-    firstHandKeypoints.forEach(keypoint => {
-      keypoint.z = 0;
-      firstHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
-    })
-
-    
-    let secondHandKeypoints;
-    let secondHandKeypointsArray = [];
-
-    if(predictions[1]){
-      //Establecer puntos de la segunda mano
+    //console.log(predictions);
+    let leftHandKeypoints = null;
+    let leftHandKeypointsArray = [];
+    let rightHandKeypoints = null;
+    let rightHandKeypointsArray = [];
+    let leftPrediction = null;
+    let rightPrediction = null;
+    if(predictions.length==2){//hay dos manos
       detecting2Hands = true
-      secondHandKeypoints = predictions[1].keypoints
-
-      secondHandKeypoints.forEach(keypoint => {
+      /**
+       * Save every handPrediction in a diferent variable
+       */
+      if(predictions[0].handedness=="Left"){
+        leftPrediction = predictions[0]
+        rightPrediction = predictions[1]
+      }else{
+        rightPrediction = predictions[0];
+        leftPrediction = predictions[1];
+      }
+      /**
+       * Extract the information of the every hand prediction
+       */
+      leftHandKeypoints= leftPrediction.keypoints;
+      leftHandKeypoints.forEach(keypoint => {
         keypoint.z = 0;
-        secondHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
-      });
+        leftHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
+      })
+    
+      rightHandKeypoints= rightPrediction.keypoints;
+      rightHandKeypoints.forEach(keypoint => {
+        keypoint.z = 0;
+        rightHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
+      })
+
+      estimatedLeftHandGesture = GE.estimate(leftHandKeypointsArray, 9)
+      estimatedRightHandGesture = GE.estimate(rightHandKeypointsArray, 9)
       
-      //Estimar gestos de ambas manos
-      estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
-      estimatedSecondHandGesture = GE.estimate(secondHandKeypointsArray, 9)
-    } else {
-      //Estimar gestos de la primera mano
-      detecting2Hands = false;
-      estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
+    }else{//hay una mano
+      detecting2Hands = false
+      if(predictions[0].handedness=="Left"){
+        leftPrediction = predictions[0]
+      }else{
+        rightPrediction = predictions[0];
+      }
+
+      if(leftPrediction){
+        leftHandKeypoints= leftPrediction.keypoints;
+        leftHandKeypoints.forEach(keypoint => {
+          keypoint.z = 0;
+          leftHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
+        })
+        estimatedLeftHandGesture = GE.estimate(leftHandKeypointsArray, 9)
+      } else if (rightPrediction){
+        rightHandKeypoints= rightPrediction.keypoints;
+        rightHandKeypoints.forEach(keypoint => {
+          keypoint.z = 0;
+          rightHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
+        })
+        estimatedRightHandGesture = GE.estimate(rightHandKeypointsArray, 9)
+      }
     }
+    console.log(detecting2Hands);
+    // let secondHandKeypoints;
+    // let secondHandKeypointsArray = [];
+
+    // if(predictions[1]){
+    //   //Establecer puntos de la segunda mano
+    //   detecting2Hands = true
+    //   secondHandKeypoints = predictions[1].keypoints
+
+    //   secondHandKeypoints.forEach(keypoint => {
+    //     keypoint.z = 0;
+    //     secondHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
+    //   });
+      
+    //   //Estimar gestos de ambas manos
+    //   estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
+    //   estimatedSecondHandGesture = GE.estimate(secondHandKeypointsArray, 9)
+    // } else {
+    //   //Estimar gestos de la primera mano
+    //   detecting2Hands = false;
+    //   estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
+    // }
 }
 
 function detect2Hands(){
-  if(estimatedFirstHandGesture.gestures[0] && estimatedSecondHandGesture.gestures[0]){
-    firstHandGesture = smoothGesture(estimatedFirstHandGesture.gestures[0].name) 
-    secondHandGesture = smoothGesture(estimatedSecondHandGesture.gestures[0].name) 
-  } else if (estimatedFirstHandGesture.gestures[0]){
-    firstHandGesture = smoothGesture(estimatedFirstHandGesture.gestures[0].name) 
-    secondHandGesture = "idle"
-  } else if (estimatedSecondHandGesture.gestures[0]){
-    firstHandGesture = "idle"
-    secondHandGesture = smoothGesture(estimatedSecondHandGesture.gestures[0].name) 
+  console.log("detect2Hands");
+  if(estimatedLeftHandGesture.gestures[0] && estimatedRightHandGesture.gestures[0]){
+    console.log("Dos gestos");
+    leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name) 
+    rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
+  } else if (estimatedLeftHandGesture.gestures[0]){
+    leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name) 
+    rightHandGesture = "idle"
+  } else if (estimatedRightHandGesture.gestures[0]){
+    leftHandGesture = "idle"
+    rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
   } else {
-    firstHandGesture = "idle"
-    secondHandGesture = "idle"
+    leftHandGesture = "idle"
+    rightHandGesture = "idle"
   }
-  console.log(secondHandGesture + " " + firstHandGesture);
+  left_result.textContent = leftHandGesture
+  right_result.textContent = rightHandGesture
+  //console.log(rightHandGesture + " " + leftHandGesture);
 }
 
 function detect1Hand(){
-  if (estimatedFirstHandGesture.gestures[0]){
-    firstHandGesture = smoothGesture(estimatedFirstHandGesture.gestures[0].name) 
-    secondHandGesture = "idle"
-  } else {
-    firstHandGesture = "idle"
-  }
-  console.log(firstHandGesture);
-}
-
-
-
-let lastGesture = "";
-let gestureDuration = 0;
-
-function smoothGesture(gestureName){
-
-  if(gestureName != null){
-    if(gestureName == lastGesture){
-      gestureDuration++;
-    } else {
-      lastGesture = gestureName;
-      gestureDuration = 0;
+  if (estimatedLeftHandGesture){
+    if(estimatedLeftHandGesture.gestures[0]){
+      leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name)
+    }
+  } else if (estimatedRightHandGesture){
+    console.log("IF derecha");
+    if(estimatedRightHandGesture.gestures[0]){
+      console.log("segundo if derecha");
+      rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
+      console.log(rightHandGesture);
     }
   } else {
-    lastGesture = "";
-    gestureDuration = 0;
+    leftHandGesture = "idle"
+    rightHandGesture = "idle"
+  }
+  left_result.textContent = leftHandGesture
+  right_result.textContent = rightHandGesture
+  console.log(leftHandGesture);
+}
+
+let leftLastGesture = "";
+let leftGestureDuration = 0;
+
+function leftSmoothGesture(gestureName){
+  if(gestureName != null){
+    if(gestureName == leftLastGesture){
+      leftGestureDuration++;
+    } else {
+      leftLastGesture = gestureName;
+      leftGestureDuration = 0;
+    }
+  } else {
+    leftLastGesture = "";
+    leftGestureDuration = 0;
   }
 
-  if(gestureDuration < 5){
-    return ""
+  if(leftGestureDuration < 5){
   } else {
     return gestureName;
   }
+}
 
+let rightLastGesture = "";
+let rightGestureDuration = 0;
+
+function rightSmoothGesture(gestureName){
+  if(gestureName != null){
+    if(gestureName == rightLastGesture){
+      rightGestureDuration++;
+    } else {
+      rightLastGesture = gestureName;
+      rightGestureDuration = 0;
+    }
+  } else {
+    rightLastGesture = "";
+    rightGestureDuration = 0;
+  }
+
+  if(rightGestureDuration < 5){
+  } else {
+    return gestureName;
+  }
 }
 
 function moveLocalRobot(){
   //Gloabl
   window.lastMovement = Date.now();
 
-  if(firstHandGesture == "downAxis" || secondHandGesture == "downAxis"){
+  if(leftHandGesture == "downAxis" || rightHandGesture == "downAxis"){
     if(window.downAxisCount == 0){
       changeAxis(-1);
       window.downAxisCount+=1
     }
     if(window.upAxisCount > 0) window.upAxisCount = 0
-  } else if (firstHandGesture == "upAxis" || secondHandGesture == "upAxis"){
+  } else if (leftHandGesture == "upAxis" || rightHandGesture == "upAxis"){
     if(window.upAxisCount == 0){
       changeAxis(1);
       window.upAxisCount+=1
     }
     if(window.downAxisCount > 0) window.downAxisCount = 0
-  } else if (firstHandGesture == "moveLeft" || secondHandGesture == "moveLeft"){
+  } else if (leftHandGesture == "moveLeft" || rightHandGesture == "moveLeft"){
     window.downAxisCount = 0
     window.upAxisCount = 0
     if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
@@ -217,7 +304,7 @@ function moveLocalRobot(){
       window.rotate_z_right = false;
       window.rotate_z_left = true;
     }
-  } else if (firstHandGesture == "moveRight" || secondHandGesture == "moveRight"){
+  } else if (leftHandGesture == "moveRight" || rightHandGesture == "moveRight"){
     window.downAxisCount = 0
     window.upAxisCount = 0
     if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
@@ -242,9 +329,11 @@ function changeAxis(num){
   let axis = ["ArmBase2","2","3","4","5",]
   let nextAxis = window.actualAxisIndex + num;
 
-  console.log(nextAxis);
-  
-  
+  window.rotate_y_left = false;
+  window.rotate_y_right = false;
+  window.rotate_z_left = false;
+  window.rotate_z_right = false;
+
   if (nextAxis == 5) {
     window.actualAxis = axis[0]
     window.actualAxisIndex = 0;
@@ -255,8 +344,6 @@ function changeAxis(num){
     window.actualAxis = axis[nextAxis]
     window.actualAxisIndex = nextAxis
   }
-  // console.log(window.actualAxis);
-  // console.log(window.actualAxisIndex);
 }
 
 //Funcion para enviar las instrucciones al robot
