@@ -335,7 +335,7 @@ function moveLocalRobot(){
   } else if (leftHandGesture == "moveLeft" || rightHandGesture == "moveLeft"){
     window.downAxisCount = 0
     window.upAxisCount = 0
-    if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
+    if(window.actualAxisIndex == 4 || window.actualAxisIndex == 0 ){
       window.rotate_y_right = false;
       window.rotate_y_left = true;
     } else {
@@ -345,7 +345,7 @@ function moveLocalRobot(){
   } else if (leftHandGesture == "moveRight" || rightHandGesture == "moveRight"){
     window.downAxisCount = 0
     window.upAxisCount = 0
-    if(window.actualAxis == "5" || window.actualAxis == "ArmBase2" ){
+    if(window.actualAxisIndex == 4 || window.actualAxisIndex == 0 ){
       window.rotate_y_left = false;
       window.rotate_y_right = true;
     } else {
@@ -356,15 +356,31 @@ function moveLocalRobot(){
     stopMove();
   }
   
-  moveRemoteRobot()
+  //moveRemoteRobot()
   if (createdIntervalMoveRobot==false) {
     createdIntervalMoveRobot = true;
-    var moveRobotInterval = window.setInterval(moveRemoteRobot(), 3000);
+    var moveRobotInterval = window.setInterval(moveRemoteRobot, 50);
   }
 }
 
 function moveRemoteRobot(){
+  //Vuelta completa es 6.28==0 || -6.28==0 
+  let fullTurn = 6.28
+  console.log("moveRemoteRobot")
+
+  if (window.last_robot_move.z == window.actual_robot_move.z && window.last_robot_move.y == window.actual_robot_move.y) return
+
   
+  //si el robot da mas de una vuelta, resta el valor de una vuelta para reiniciar, en ambos direcciones (L,R)
+  if (window.actual_robot_move < -fullTurn) {
+    window.actual_robot_move += fullTurn;
+  }
+
+  if (window.actual_robot_move > fullTurn) {
+    window.actual_robot_move -= fullTurn;
+  }
+
+
 }
 
 function stopMove(){

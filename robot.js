@@ -16,20 +16,19 @@ window.camera = null;
 window.dae_obj = null;
 window.boxHelper  = null;
 window.robot = null;
-window.rotate_z = false;
 window.rotate_y_left = false;
 window.rotate_y_right = false;
 window.rotate_z_left = false;
 window.rotate_z_right = false;
 
-window.last_move_robot = {
+window.last_robot_move = {
     axis: "ArmBase2",
     axisIndex: 0,
     y: 0,
     z: 0
 }
 
-window.actual_move_robot = {
+window.actual_robot_move = {
     axis: "ArmBase2",
     axisIndex: 0,
     y: 0,
@@ -49,9 +48,8 @@ let look_z = 0;
 (function () {
     // create scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('white');
+    scene.background = new THREE.Color('darkgrey');
 
-    window.rotate_z= false; 
     window.rotate_y = false; 
     window.rotate_x = false;
 
@@ -61,8 +59,14 @@ let look_z = 0;
     const sphereSize = 1;
     const pointLightHelper = new THREE.PointLightHelper( pl, sphereSize, 0x000000 );
 
+    var pr = new THREE.PointLight(0xffffff,0.5);
+    pr.position.set(-10, 60, -30);
+    const pointLightHelperLeft = new THREE.PointLightHelper( pr, sphereSize, 0x000000 );
+
     scene.add(pl);
-    //scene.add(pointLightHelper );
+    scene.add(pr);
+    // scene.add(pointLightHelper);
+    // scene.add(pointLightHelperLeft);
 
 
     // camera
