@@ -101,24 +101,7 @@ async function main() {
       drawHandsPoints(predictions);
       checkStop();
       moveLocalRobot();
-      //result.textContent = window.finalGestureName;
-      // //Comprueba si hay gestos
-      // if(estimatedGesture.gestures[0]){
-      //   //Si hay gestos, pone el nombre del gesto en un div
-      //   let gestureName = estimatedGesture.gestures[0].name;
 
-      //   window.finalGestureName = smoothGesture(gestureName)
-      //   //console.log(smoothGesture(gestureName));
-      //   result.textContent = window.finalGestureName;
-      //   //Envia las instrucciones al robot.
-      //   moveLocalRobot(window.finalGestureName)
-      //   sendInstructions(window.finalGestureName)
-      // } else {
-      //   //Si no hay ningun gesto pone en el div que esta en "idle"
-      //   result.textContent = "idle"
-      //   sendInstructions("idle")
-      //   moveLocalRobot("idle")
-      // }
     } else {
       left_result.textContent = "Mano Izquierda no detectada"
       right_result.textContent = "Mano Derecha no detectada"
@@ -205,27 +188,6 @@ function setHandsKeyPoints(predictions){
         estimatedRightHandGesture = fullGE.estimate(rightHandKeypointsArray, 9)
       }
     }
-    // let secondHandKeypoints;
-    // let secondHandKeypointsArray = [];
-
-    // if(predictions[1]){
-    //   //Establecer puntos de la segunda mano
-    //   detecting2Hands = true
-    //   secondHandKeypoints = predictions[1].keypoints
-
-    //   secondHandKeypoints.forEach(keypoint => {
-    //     keypoint.z = 0;
-    //     secondHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
-    //   });
-      
-    //   //Estimar gestos de ambas manos
-    //   estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
-    //   estimatedSecondHandGesture = GE.estimate(secondHandKeypointsArray, 9)
-    // } else {
-    //   //Estimar gestos de la primera mano
-    //   detecting2Hands = false;
-    //   estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
-    // }
 }
 
 function detect2Hands(){
