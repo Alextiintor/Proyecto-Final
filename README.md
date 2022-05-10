@@ -7,7 +7,6 @@ Modelo para detectar una mano:
 Modelo para detectar ambas manos:  
 [Tensorflow Hand Pose Detection](https://github.com/tensorflow/tfjs-models/tree/master/hand-pose-detection)  
 
----
 # Instalación y ejecución del proyecto
 El proyecto se divide en 3 apartados:  
 * Cliente
