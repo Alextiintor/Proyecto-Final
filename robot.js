@@ -85,7 +85,7 @@ let look_z = 0;
     // render
     var renderer = new THREE.WebGLRenderer({antialias:true});
     // var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth,window.innerHeight);
+    renderer.setSize(500,300);
     document.getElementById('robot').appendChild(renderer.domElement);
     renderer.render(scene, camera);
     
@@ -105,8 +105,8 @@ let look_z = 0;
         // adding the child that I want to the scene
         scene.add(result.scene);
         window.robot = result.scene;
-        window.robot.position.x=10;
-        window.robot.position.z= 10;
+        window.robot.position.x=0;
+        window.robot.position.z=0;
         window.dae_obj = result;
         window.dae_obj.library.visualScenes.ID2.build.quaternion.x=0;
 
