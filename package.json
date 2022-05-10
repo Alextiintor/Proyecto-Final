@@ -11,11 +11,9 @@
     "vite": "^2.9.7"
   },
   "dependencies": {
-    "@mediapipe/drawing_utils": "^0.3.1620248257",
     "@mediapipe/hands": "^0.4.1646424915",
     "@tensorflow-models/hand-pose-detection": "^2.0.0",
     "@tensorflow-models/handpose": "0.0.7",
-    "@tensorflow/tfjs-backend-wasm": "^3.16.0",
     "@tensorflow/tfjs-backend-webgl": "^3.16.0",
     "@tensorflow/tfjs-converter": "^3.16.0",
     "@tensorflow/tfjs-core": "^3.16.0",

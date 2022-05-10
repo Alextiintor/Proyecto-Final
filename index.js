@@ -1,12 +1,14 @@
-import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import '@mediapipe/hands';
-import '@mediapipe/drawing_utils';
+import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import * as fp from "fingerpose";
 import * as robotGestures from './Gestures/index'
 import { io } from 'socket.io-client'
 
+/**
+ * Initialize Variables
+ */
 //const socket = io("localhost:8000");
 window.lastMovement = Date.now()
 window.finalGestureName = "idle"
@@ -52,18 +54,18 @@ const leftGestures = [
   robotGestures.resume
 ]
 
+/**
+ * Create estimators for every hand
+ */
 const fullGE = new fp.GestureEstimator(fullGestures)
 const leftGE = new fp.GestureEstimator(leftGestures)
 const rightGE = new fp.GestureEstimator(rightGestures)
+
 //Configuracion de la camara
 const config = {
   video: { width: 350, height: 300, fps: 30 }
 }
 
-// let gesturesCounter = {
-//   downAxis: 0,
-//   upAxis: 0
-// }
 
 /**
  * Function main:
@@ -91,7 +93,6 @@ async function main() {
 
   const estimateHands = async () => {
     //Limpiar el canvas
-
     ctx.clearRect(0, 0, config.video.width, config.video.height);
 
     //Configurar el detector de manos
