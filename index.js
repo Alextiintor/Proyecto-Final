@@ -9,7 +9,7 @@ import { io } from 'socket.io-client'
 /**
  * Initialize Variables
  */
-//const socket = io("localhost:8000");
+const socket = io("localhost:8000");
 window.lastMovement = Date.now()
 window.finalGestureName = "idle"
 window.leftHandGesture = "idle"
