@@ -407,6 +407,10 @@ function moveLocalRobot(){
  */
 function moveRemoteRobot(){
   fixInfiniteRotate();
+  if (window.last_robot_move.z == window.actual_robot_move.z && window.last_robot_move.y == window.actual_robot_move.y) {
+    return
+  }
+  window.last_robot_move = window.actual_robot_move;
   socket.emit("clientMoveRemoteRobot", window.actual_robot_move);
 }
 
