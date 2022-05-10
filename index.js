@@ -397,7 +397,7 @@ function moveLocalRobot(){
   //moveRemoteRobot()
   if (createdIntervalMoveRobot==false) {
     createdIntervalMoveRobot = true;
-    var moveRobotInterval = window.setInterval(moveRemoteRobot, 150);
+    var moveRobotInterval = window.setInterval(moveRemoteRobot, 100);
   }
 }
 
