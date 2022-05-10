@@ -8,26 +8,26 @@ import * as robotGestures from './Gestures/index'
 import { io } from 'socket.io-client'
 
 //const socket = io("localhost:8000");
-window.lastMovement = Date.now();
+window.lastMovement = Date.now()
 window.finalGestureName = "idle"
-window.leftHandGesture = "idle";
-window.rightHandGesture = "idle";
+window.leftHandGesture = "idle"
+window.rightHandGesture = "idle"
 
-const video = document.querySelector("#pose-video");
-const canvas = document.querySelector("#pose-canvas");
-const ctx = canvas.getContext("2d");
+const video = document.querySelector("#pose-video")
+const canvas = document.querySelector("#pose-canvas")
+const ctx = canvas.getContext("2d")
 const left_result = document.querySelector("#left_result")
 const right_result = document.querySelector("#right_result")
-let createdIntervalMoveRobot = false;
+let createdIntervalMoveRobot = false
 
-let detecting2Hands = false;
-let estimatedLeftHandGesture;
-let estimatedRightHandGesture;
+let detecting2Hands = false
+let estimatedLeftHandGesture
+let estimatedRightHandGesture
 
-let leftHandGesture;
-let rightHandGesture;
+let leftHandGesture
+let rightHandGesture
 
-let isStoped = false;
+let isStoped = false
 
 const fullGestures = [
   robotGestures.downAxis,
@@ -43,27 +43,27 @@ const rightGestures = [
   robotGestures.moveRight,
   robotGestures.stop,
   robotGestures.resume
-];
+]
 
 const leftGestures = [
   robotGestures.downAxis,
   robotGestures.upAxis,
   robotGestures.stop,
   robotGestures.resume
-];
+]
 
-const fullGE = new fp.GestureEstimator(fullGestures);
-const leftGE = new fp.GestureEstimator(leftGestures);
-const rightGE = new fp.GestureEstimator(rightGestures);
+const fullGE = new fp.GestureEstimator(fullGestures)
+const leftGE = new fp.GestureEstimator(leftGestures)
+const rightGE = new fp.GestureEstimator(rightGestures)
 //Configuracion de la camara
 const config = {
   video: { width: 350, height: 300, fps: 30 }
-};
-
-let gesturesCounter = {
-  downAxis: 0,
-  upAxis: 0
 }
+
+// let gesturesCounter = {
+//   downAxis: 0,
+//   upAxis: 0
+// }
 
 async function main() {
   //Cargar modelo
@@ -101,24 +101,7 @@ async function main() {
       drawHandsPoints(predictions);
       checkStop();
       moveLocalRobot();
-      //result.textContent = window.finalGestureName;
-      // //Comprueba si hay gestos
-      // if(estimatedGesture.gestures[0]){
-      //   //Si hay gestos, pone el nombre del gesto en un div
-      //   let gestureName = estimatedGesture.gestures[0].name;
 
-      //   window.finalGestureName = smoothGesture(gestureName)
-      //   //console.log(smoothGesture(gestureName));
-      //   result.textContent = window.finalGestureName;
-      //   //Envia las instrucciones al robot.
-      //   moveLocalRobot(window.finalGestureName)
-      //   sendInstructions(window.finalGestureName)
-      // } else {
-      //   //Si no hay ningun gesto pone en el div que esta en "idle"
-      //   result.textContent = "idle"
-      //   sendInstructions("idle")
-      //   moveLocalRobot("idle")
-      // }
     } else {
       left_result.textContent = "Mano Izquierda no detectada"
       right_result.textContent = "Mano Derecha no detectada"
@@ -205,27 +188,6 @@ function setHandsKeyPoints(predictions){
         estimatedRightHandGesture = fullGE.estimate(rightHandKeypointsArray, 9)
       }
     }
-    // let secondHandKeypoints;
-    // let secondHandKeypointsArray = [];
-
-    // if(predictions[1]){
-    //   //Establecer puntos de la segunda mano
-    //   detecting2Hands = true
-    //   secondHandKeypoints = predictions[1].keypoints
-
-    //   secondHandKeypoints.forEach(keypoint => {
-    //     keypoint.z = 0;
-    //     secondHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
-    //   });
-      
-    //   //Estimar gestos de ambas manos
-    //   estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
-    //   estimatedSecondHandGesture = GE.estimate(secondHandKeypointsArray, 9)
-    // } else {
-    //   //Estimar gestos de la primera mano
-    //   detecting2Hands = false;
-    //   estimatedFirstHandGesture = GE.estimate(firstHandKeypointsArray, 9)
-    // }
 }
 
 function detect2Hands(){

@@ -4,14 +4,13 @@ import {GestureDescription} from "fingerpose";
 const upAxis = new GestureDescription('upAxis');
 
 // thumb:
-upAxis.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);
-upAxis.addDirection(Finger.Thumb, FingerDirection.VerticalUp, 1.0);
-upAxis.addDirection(Finger.Thumb, FingerDirection.DiagonalUpLeft, 1.0);
-upAxis.addDirection(Finger.Thumb, FingerDirection.DiagonalUpRight, 1.0);
+
 
 // index:
-upAxis.addCurl(Finger.Index, FingerCurl.FullCurl, 1.0);
-upAxis.addCurl(Finger.Index, FingerCurl.HalfCurl, 0.9);
+upAxis.addCurl(Finger.Index, FingerCurl.NoCurl, 1.0);
+upAxis.addDirection(Finger.Index, FingerDirection.VerticalUp, 1.0)
+upAxis.addDirection(Finger.Index, FingerDirection.DiagonalUpLeft, 0.9)
+upAxis.addDirection(Finger.Index, FingerDirection.DiagonalUpRight, 0.9)
 
 // middle:
 upAxis.addCurl(Finger.Middle, FingerCurl.FullCurl, 1.0);
