@@ -5,7 +5,10 @@ import * as THREE from 'three'
 import { OrbitControls, MapControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import * as dat from 'dat.gui'
+import { time } from '@tensorflow/tfjs-core';
+import {io} from 'socket.io-client'
 
+const socket = io();
 // import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/loaders/GLTFLoader.js'; 
 // import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/loaders/RGBELoader.js'; 
 // import { RoughnessMipmapper } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/utils/RoughnessMipmapper.js'; 
@@ -136,77 +139,25 @@ let look_z = 0;
     });
     var loop = function () {
         let posPivot = 0;
-        // camera.lookAt(look_x, look_y, look_z);
-
-        //Comprueba el eje del robot, en el if comprueba si es la base sino son el resto de ejes
-        if (window.actualAxisIndex==0) {
-            /**
-             * Comprueba si hay alguna variable en T/F, 
-             * Mientras este en true el robot girara sumandole 0.01 a la posicion de la rotacion actual
-             * en este caso y
-             */
-            if(window.rotate_y_left == true){
-                window.robot_parts[window.actualAxis].rotation.y+=0.01;
-            }
-            if(window.rotate_y_right == true){
-                window.robot_parts[window.actualAxis].rotation.y-=0.01;
-            }
-            
+        socket.on("moveRemoteRobot", (move)=>{
             window.actual_robot_move = {
-                axis: window.actualAxis,
-                axisIndex: window.actualAxisIndex,
-                y: window.robot_parts[window.actualAxis].rotation.y,
-                z: window.robot_parts[window.actualAxis].rotation.z
+                axis: "ArmBase2",
+                axisIndex: 0,
+                y: 0,
+                z: 0
             }
 
-        } else {
-            /**
-             * posPivot busca el pivot dentro del eje actual,
-             * children es un array de objetos entre los cuales, esta el pivot en la ultima posicion siempre
-             */
-            posPivot = window.robot_parts[window.actualAxis].children.length -1;
-
-            /**
-             * Comprueba si hay alguna variable en T/F, 
-             * Mientras este en true el robot girara sumandole 0.01 a la posicion de la rotacion actual
-             * en este caso Y para el ultimo eje (4) y Z para el resto de ejes
-             */
-            if(window.rotate_y_left == true){
-                window.robot_parts[window.actualAxis].children[posPivot].rotation.y+=0.01;
+            if(move.axisIndex == 0 ){
+                window.robot_parts[move.axis].rotation.y=move.y;
+            }else{
+                posPivot = window.robot_parts[move.axis].children.length-1
+                if (move.axisIndex == 4) {
+                    window.robot_parts[move.axis].children[posPivot].rotation.y=move.y;
+                }else{
+                    window.robot_parts[move.axis].children[posPivot].rotation.z=move.z;
+                }
             }
-            if(window.rotate_y_right == true){
-                window.robot_parts[window.actualAxis].children[posPivot].rotation.y-=0.01;
-            }
-            if(window.rotate_z_left == true){
-                window.robot_parts[window.actualAxis].children[posPivot].rotation.z+=0.01;
-            }
-            if(window.rotate_z_right == true){
-                window.robot_parts[window.actualAxis].children[posPivot].rotation.z-=0.01;
-            }
-
-            window.actual_robot_move = {
-                axis: window.actualAxis,
-                axisIndex: window.actualAxisIndex,
-                y: window.robot_parts[window.actualAxis].children[posPivot].rotation.y,
-                z: window.robot_parts[window.actualAxis].children[posPivot].rotation.z
-            }
-        }
-
-        /**
-         * Si la diferencia (en milisegundos)
-         * de la fecha actual y el ultimo movimiento supera los 100 milisegundos,
-         * detiene cualquier movimiento en cualquier direccion y cualquier gesto
-         */
-        if(Date.now() - window.lastMovement > 100){
-            window.rotate_y_left = false;
-            window.rotate_y_right = false;
-            window.rotate_z_right = false;
-            window.rotate_z_left = false;
-            window.finalGestureName = "idle"
-            //document.querySelector("#result").textContent = window.finalGestureName
-        }
-
-        
+        })
 
         requestAnimationFrame(loop);
         renderer.render(scene, camera);

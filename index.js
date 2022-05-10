@@ -9,7 +9,7 @@ import { io } from 'socket.io-client'
 /**
  * Initialize Variables
  */
-//const socket = io("localhost:8000");
+const socket = io("localhost:8000");
 window.lastMovement = Date.now()
 window.finalGestureName = "idle"
 window.leftHandGesture = "idle"
@@ -393,7 +393,7 @@ function moveLocalRobot(){
   //moveRemoteRobot()
   if (createdIntervalMoveRobot==false) {
     createdIntervalMoveRobot = true;
-    var moveRobotInterval = window.setInterval(moveRemoteRobot, 150);
+    var moveRobotInterval = window.setInterval(moveRemoteRobot, 100);
   }
 }
 
