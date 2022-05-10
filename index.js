@@ -65,7 +65,7 @@ const rightGE = new fp.GestureEstimator(rightGestures)
 
 //Configuracion de la camara
 const config = {
-  video: { width: 350, height: 300, fps: 30 }
+  video: { width: window.innerWidth/3.5, height: window.innerHeight/3, fps: 60 }
 }
 
 

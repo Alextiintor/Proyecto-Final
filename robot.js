@@ -84,7 +84,7 @@ let look_z = 0;
     // render
     var renderer = new THREE.WebGLRenderer({antialias:true});
     // var renderer = new THREE.WebGLRenderer();W
-    renderer.setSize(600,400);
+    renderer.setSize(window.innerWidth/3.5, window.innerHeight/3);
     document.getElementById('robot').appendChild(renderer.domElement);
     renderer.render(scene, camera);
     
