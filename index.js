@@ -406,11 +406,11 @@ function moveLocalRobot(){
  * @returns 
  */
 function moveRemoteRobot(){
-  fixInfiniteRotate();
+  fixInfiniteRotation();
   socket.emit("clientMoveRemoteRobot", window.actual_robot_move);
 }
 
-function fixInfiniteRotate(){
+function fixInfiniteRotation(){
   //Vuelta completa es 6.28==0 || -6.28==0 
   let fullTurn = 6.28
 
