@@ -65,6 +65,18 @@ const config = {
 //   upAxis: 0
 // }
 
+/**
+ * Function main:
+ * Loads the hand pose model
+ * Creates a detector
+ * Estiamtes Hands
+ * Sets handkey points
+ * Detect 1 or 2 hands
+ * Checks for gestures
+ * Moves local robot
+ * 
+ * Loop
+ */
 async function main() {
   //Cargar modelo
   const model = await handPoseDetection.SupportedModels.MediaPipeHands;
@@ -90,6 +102,8 @@ async function main() {
     if(predictions.length != 0){
       //Funcion para establecer los puntos de ambas manos
       setHandsKeyPoints(predictions);
+      //Pintar los puntos de las manos
+      drawHandsPoints(predictions);
 
       //Diferenciar entre si hay una mano en pantalla o 2
       if(detecting2Hands){
@@ -98,11 +112,13 @@ async function main() {
         detect1Hand();
       }
 
-      drawHandsPoints(predictions);
+      //Comprobar si se esta pausando o reanudando
       checkStop();
+      //Mover el robot local
       moveLocalRobot();
 
     } else {
+      //Establecer el texto por defecto cuando no hay ninguna mano en pantalla
       left_result.textContent = "Mano Izquierda no detectada"
       right_result.textContent = "Mano Derecha no detectada"
     }
@@ -113,6 +129,11 @@ async function main() {
   estimateHands();
 }
 
+
+/**
+ * Funcion que comprueba si el gesto que se esta haciendo es el de stop o resume
+ * pause o reanuda los movimientos del robot.
+ */
 function checkStop(){
   if(leftHandGesture == "stop" || rightHandGesture == "stop"){
     stopMove();
@@ -122,84 +143,104 @@ function checkStop(){
   }
 }
 
+/**
+ * Function that sets the keypoints of each hand.
+ * 
+ * @param {*} predictions 
+ */
 function setHandsKeyPoints(predictions){
-    //Establecer puntos de la primera mano
-    //console.log(predictions);
-    let leftHandKeypoints = null;
-    let leftHandKeypointsArray = [];
-    let rightHandKeypoints = null;
-    let rightHandKeypointsArray = [];
-    let leftPrediction = null;
-    let rightPrediction = null;
+  //Initialize variables
+  let leftHandKeypoints = null;
+  let leftHandKeypointsArray = [];
+  let rightHandKeypoints = null;
+  let rightHandKeypointsArray = [];
+  let leftPrediction = null;
+  let rightPrediction = null;
 
-    if(predictions.length==2){//hay dos manos
-      detecting2Hands = true
-      /**
-       * Save every handPrediction in a diferent variable
-       */
-      if(predictions[0].handedness=="Left"){
-        leftPrediction = predictions[0]
-        rightPrediction = predictions[1]
-      }else{
-        rightPrediction = predictions[0];
-        leftPrediction = predictions[1];
-      }
-      /**
-       * Extract the information of the every hand prediction
-       */
+  if(predictions.length==2){//Two hands
+    detecting2Hands = true
+    /**
+     * Save every handPrediction in a diferent variable
+     */
+    if(predictions[0].handedness=="Left"){
+      leftPrediction = predictions[0]
+      rightPrediction = predictions[1]
+    }else{
+      rightPrediction = predictions[0];
+      leftPrediction = predictions[1];
+    }
+    /**
+     * Extract the information of the every hand prediction
+     */
+    leftHandKeypoints= leftPrediction.keypoints;
+    leftHandKeypoints.forEach(keypoint => {
+      keypoint.z = 0;
+      leftHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
+    })
+  
+    rightHandKeypoints= rightPrediction.keypoints;
+    rightHandKeypoints.forEach(keypoint => {
+      keypoint.z = 0;
+      rightHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
+    })
+
+    /**
+     * Estimate gesture of each hand
+     */
+    estimatedLeftHandGesture = leftGE.estimate(leftHandKeypointsArray, 9)
+    estimatedRightHandGesture = rightGE.estimate(rightHandKeypointsArray, 9)
+    
+  }else{//One hand
+    detecting2Hands = false
+    if(predictions[0].handedness=="Left"){
+      leftPrediction = predictions[0]
+    }else{
+      rightPrediction = predictions[0];
+    }
+
+    /**
+     * Check if the hand in screen is left or right
+     */
+    if(leftPrediction){
+      estimatedRightHandGesture = null
       leftHandKeypoints= leftPrediction.keypoints;
       leftHandKeypoints.forEach(keypoint => {
         keypoint.z = 0;
         leftHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
       })
-    
+
+      /**
+       * Estimate left hand gestures 
+       */
+      estimatedLeftHandGesture = fullGE.estimate(leftHandKeypointsArray, 9)
+    } else if (rightPrediction){
+      estimatedLeftHandGesture = null
       rightHandKeypoints= rightPrediction.keypoints;
       rightHandKeypoints.forEach(keypoint => {
         keypoint.z = 0;
         rightHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
       })
-
-      estimatedLeftHandGesture = leftGE.estimate(leftHandKeypointsArray, 9)
-      estimatedRightHandGesture = rightGE.estimate(rightHandKeypointsArray, 9)
-      
-    }else{//hay una mano
-      detecting2Hands = false
-      if(predictions[0].handedness=="Left"){
-        leftPrediction = predictions[0]
-      }else{
-        rightPrediction = predictions[0];
-      }
-
-      if(leftPrediction){
-        estimatedRightHandGesture = null
-        leftHandKeypoints= leftPrediction.keypoints;
-        leftHandKeypoints.forEach(keypoint => {
-          keypoint.z = 0;
-          leftHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
-        })
-        estimatedLeftHandGesture = fullGE.estimate(leftHandKeypointsArray, 9)
-      } else if (rightPrediction){
-        estimatedLeftHandGesture = null
-        rightHandKeypoints= rightPrediction.keypoints;
-        rightHandKeypoints.forEach(keypoint => {
-          keypoint.z = 0;
-          rightHandKeypointsArray.push([keypoint.x, keypoint.y, keypoint.z])
-        })
-        estimatedRightHandGesture = fullGE.estimate(rightHandKeypointsArray, 9)
-      }
+      /**
+       * Estimate right hand Gestures
+       */
+      estimatedRightHandGesture = fullGE.estimate(rightHandKeypointsArray, 9)
     }
+  }
 }
 
+/**
+ * Function that sets gesture when both hands are in screen
+ */
 function detect2Hands(){
   if(estimatedLeftHandGesture.gestures[0] && estimatedRightHandGesture.gestures[0]){
-    leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name) 
-    rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
+    leftHandGesture = leftImproveGestureDetection(estimatedLeftHandGesture.gestures[0].name) 
+    rightHandGesture = rightImproveGestureDetection(estimatedRightHandGesture.gestures[0].name) 
   } else if (estimatedLeftHandGesture.gestures[0]){
-    leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name) 
+    leftHandGesture = leftImproveGestureDetection(estimatedLeftHandGesture.gestures[0].name) 
     rightHandGesture = "idle"
   } else if (estimatedRightHandGesture.gestures[0]){
     leftHandGesture = "idle"
-    rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
+    rightHandGesture = rightImproveGestureDetection(estimatedRightHandGesture.gestures[0].name) 
   } else {
     leftHandGesture = "idle"
     rightHandGesture = "idle"
@@ -208,17 +249,20 @@ function detect2Hands(){
   right_result.textContent = rightHandGesture
 }
 
+/**
+ * Function that sets gesture when one hand is in screen
+ */
 function detect1Hand(){
   if (estimatedLeftHandGesture){
     if(estimatedLeftHandGesture.gestures[0]){
-      leftHandGesture = leftSmoothGesture(estimatedLeftHandGesture.gestures[0].name)
+      leftHandGesture = leftImproveGestureDetection(estimatedLeftHandGesture.gestures[0].name)
       rightHandGesture = "Mano derecha no detectada"
     } else {
       leftHandGesture = "idle"
     }
   } else if (estimatedRightHandGesture){
     if(estimatedRightHandGesture.gestures[0]){
-      rightHandGesture = rightSmoothGesture(estimatedRightHandGesture.gestures[0].name) 
+      rightHandGesture = rightImproveGestureDetection(estimatedRightHandGesture.gestures[0].name) 
     } else {
       rightHandGesture = "idle"
     }
@@ -230,10 +274,20 @@ function detect1Hand(){
   right_result.textContent = rightHandGesture
 }
 
+/**
+ * Initilize variables for improve left gesture detection
+ */
 let leftLastGesture = "";
 let leftGestureDuration = 0;
 
-function leftSmoothGesture(gestureName){
+/**
+ * Left Hand
+ * Function that improves the gesture detection by checking how many
+ * frames the gesture is in screen.
+ * @param {*} gestureName 
+ * @returns gestureName
+ */
+function leftImproveGestureDetection(gestureName){
   if(gestureName != null){
     if(gestureName == leftLastGesture){
       leftGestureDuration++;
@@ -252,10 +306,20 @@ function leftSmoothGesture(gestureName){
   }
 }
 
+/**
+ * Initilize variables for improve right gesture detection
+ */
 let rightLastGesture = "";
 let rightGestureDuration = 0;
 
-function rightSmoothGesture(gestureName){
+/**
+ * Right Hand
+ * Function that improves the gesture detection by checking how many
+ * frames the gesture is in screen.
+ * @param {*} gestureName 
+ * @returns gestureName
+ */
+function rightImproveGestureDetection(gestureName){
   if(gestureName != null){
     if(gestureName == rightLastGesture){
       rightGestureDuration++;
@@ -274,6 +338,10 @@ function rightSmoothGesture(gestureName){
   }
 }
 
+/**
+ * Function that moves the local robot depending on the gesture made.
+ * @returns 
+ */
 function moveLocalRobot(){
   //Gloabl
   window.lastMovement = Date.now();
@@ -315,6 +383,9 @@ function moveLocalRobot(){
       window.rotate_z_right = true;
     }
   } else {
+    /**
+     * In case there's no gesture stop the robot.
+     */
     stopMove();
   }
   
@@ -325,6 +396,10 @@ function moveLocalRobot(){
   }
 }
 
+/**
+ * Function thats moves the remote robot by socket.io
+ * @returns 
+ */
 function moveRemoteRobot(){
   //Vuelta completa es 6.28==0 || -6.28==0 
   let fullTurn = 6.28
@@ -345,6 +420,9 @@ function moveRemoteRobot(){
 
 }
 
+/**
+ * Function that stops any movement the robot is doing
+ */
 function stopMove(){
   window.downAxisCount = 0
   window.upAxisCount = 0
@@ -354,6 +432,11 @@ function stopMove(){
   window.rotate_z_right = false;
 }
 
+/**
+ * Function thats changes the axis that is selected
+ * 
+ * @param {*} num 
+ */
 function changeAxis(num){
   let axis = ["ArmBase2","ArmBase2","ArmBase3","ArmBase4","ArmBase5",]
   let nextAxis = window.actualAxisIndex + num;
@@ -390,7 +473,14 @@ function sendInstructions(gesture){
   }
 }
 
-//Funcion para inciar la camara
+/**
+ * Function thats starts the camera
+ * 
+ * @param {*} width 
+ * @param {*} height 
+ * @param {*} fps 
+ * @returns 
+ */
 async function initCamera(width, height, fps) {
 
   const constraints = {
@@ -417,6 +507,15 @@ async function initCamera(width, height, fps) {
 }
 
 //Funcion para pintar los puntos de la mano
+/**
+ * Functiona that draw a point in the canvas in an especific position
+ * 
+ * @param {*} ctx 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} r 
+ * @param {*} color 
+ */
 function drawPoint(ctx, x, y, r, color) {
   ctx.beginPath();
   ctx.arc(x, y, r, 0, 2 * Math.PI);
@@ -424,6 +523,12 @@ function drawPoint(ctx, x, y, r, color) {
   ctx.fill();
 }
 
+
+/**
+ * Function that prints the points of each hand in different colors
+ * 
+ * @param {*} predictions 
+ */
 function drawHandsPoints(predictions){
   predictions.forEach(hand => {
     hand.keypoints.forEach(keypoint => {
@@ -439,6 +544,9 @@ function drawHandsPoints(predictions){
   });
 }
 
+/**
+ * When content loaded starts the app.
+ */
 window.addEventListener("DOMContentLoaded", () => {
 
   initCamera(
