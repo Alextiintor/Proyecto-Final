@@ -6,15 +6,10 @@ import * as fp from "fingerpose";
 import * as robotGestures from './Gestures/index'
 import { io } from 'socket.io-client'
 
-<<<<<<< HEAD
-const socket = io("localhost:8000");
-
-=======
 /**
  * Initialize Variables
  */
 //const socket = io("localhost:8000");
->>>>>>> 63e6c5b557f9b8570e3718c7569e59a623baac57
 window.lastMovement = Date.now()
 window.finalGestureName = "idle"
 window.leftHandGesture = "idle"
