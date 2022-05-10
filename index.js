@@ -8,26 +8,26 @@ import * as robotGestures from './Gestures/index'
 import { io } from 'socket.io-client'
 
 //const socket = io("localhost:8000");
-window.lastMovement = Date.now();
+window.lastMovement = Date.now()
 window.finalGestureName = "idle"
-window.leftHandGesture = "idle";
-window.rightHandGesture = "idle";
+window.leftHandGesture = "idle"
+window.rightHandGesture = "idle"
 
-const video = document.querySelector("#pose-video");
-const canvas = document.querySelector("#pose-canvas");
-const ctx = canvas.getContext("2d");
+const video = document.querySelector("#pose-video")
+const canvas = document.querySelector("#pose-canvas")
+const ctx = canvas.getContext("2d")
 const left_result = document.querySelector("#left_result")
 const right_result = document.querySelector("#right_result")
-let createdIntervalMoveRobot = false;
+let createdIntervalMoveRobot = false
 
-let detecting2Hands = false;
-let estimatedLeftHandGesture;
-let estimatedRightHandGesture;
+let detecting2Hands = false
+let estimatedLeftHandGesture
+let estimatedRightHandGesture
 
-let leftHandGesture;
-let rightHandGesture;
+let leftHandGesture
+let rightHandGesture
 
-let isStoped = false;
+let isStoped = false
 
 const fullGestures = [
   robotGestures.downAxis,
@@ -43,27 +43,27 @@ const rightGestures = [
   robotGestures.moveRight,
   robotGestures.stop,
   robotGestures.resume
-];
+]
 
 const leftGestures = [
   robotGestures.downAxis,
   robotGestures.upAxis,
   robotGestures.stop,
   robotGestures.resume
-];
+]
 
-const fullGE = new fp.GestureEstimator(fullGestures);
-const leftGE = new fp.GestureEstimator(leftGestures);
-const rightGE = new fp.GestureEstimator(rightGestures);
+const fullGE = new fp.GestureEstimator(fullGestures)
+const leftGE = new fp.GestureEstimator(leftGestures)
+const rightGE = new fp.GestureEstimator(rightGestures)
 //Configuracion de la camara
 const config = {
   video: { width: 350, height: 300, fps: 30 }
-};
-
-let gesturesCounter = {
-  downAxis: 0,
-  upAxis: 0
 }
+
+// let gesturesCounter = {
+//   downAxis: 0,
+//   upAxis: 0
+// }
 
 async function main() {
   //Cargar modelo
