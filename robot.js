@@ -47,7 +47,7 @@ let look_z = 0;
 (function () {
     // create scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('darkgrey');
+    scene.background = new THREE.Color('white');
 
     window.rotate_y = false; 
     window.rotate_x = false;

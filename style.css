@@ -21,12 +21,12 @@ canvas {
   z-index: 0; 
 }
 
-#robot { 
+#robot{ 
   position: absolute; 
   float: right; 
   clear: both;  
   z-index: 0; 
-  border: 1px solid black;
+  border: 1px solid rgba(255, 255, 255, 0.457);
 }
 
 .ai-info{
