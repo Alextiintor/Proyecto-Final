@@ -397,7 +397,7 @@ function moveLocalRobot(){
   //moveRemoteRobot()
   if (createdIntervalMoveRobot==false) {
     createdIntervalMoveRobot = true;
-    var moveRobotInterval = window.setInterval(moveRemoteRobot, 100);
+    var moveRobotInterval = window.setInterval(moveRemoteRobot, 50);
   }
 }
 
@@ -406,7 +406,11 @@ function moveLocalRobot(){
  * @returns 
  */
 function moveRemoteRobot(){
+  if (window.last_robot_move.z == window.actual_robot_move.z && window.last_robot_move.y == window.actual_robot_move.y) {
+    return
+  }
   fixInfiniteRotation();
+  window.last_robot_move = window.actual_robot_move;
   socket.emit("clientMoveRemoteRobot", window.actual_robot_move);
 }
 
