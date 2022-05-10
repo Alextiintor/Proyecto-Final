@@ -1,0 +1,26 @@
+{
+  "name": "remoterobot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "robot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/dat.gui": "^0.7.7",
+    "dat.gui": "^0.7.9",
+    "public": "^0.1.5",
+    "regenerator-runtime": "^0.13.9",
+    "socket.io-client": "^4.5.0",
+    "three": "^0.140.2"
+  },
+  "devDependencies": {
+    "vite": "^2.9.8"
+  }
+}

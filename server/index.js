@@ -12,7 +12,7 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
     console.log(socket.id);
-    socket.on("clientMovesRobot", (direction) => {
+    socket.on("clientMoveRemoteRobot", (direction) => {
         console.log(direction);
         io.emit("serverMovesRobot", (direction))
     })

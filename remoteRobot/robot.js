@@ -8,7 +8,7 @@ import * as dat from 'dat.gui'
 import { time } from '@tensorflow/tfjs-core';
 import {io} from 'socket.io-client'
 
-const socket = io();
+const socket = io('localhost:8000');
 // import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/loaders/GLTFLoader.js'; 
 // import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/loaders/RGBELoader.js'; 
 // import { RoughnessMipmapper } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/utils/RoughnessMipmapper.js'; 
@@ -87,7 +87,7 @@ let look_z = 0;
     // render
     var renderer = new THREE.WebGLRenderer({antialias:true});
     // var renderer = new THREE.WebGLRenderer();
-    renderer.setSize(700,500);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById('robot').appendChild(renderer.domElement);
     renderer.render(scene, camera);
     
@@ -139,7 +139,7 @@ let look_z = 0;
     });
     var loop = function () {
         let posPivot = 0;
-        socket.on("moveRemoteRobot", (move)=>{
+        socket.on("serverMovesRobot", (move)=>{
             window.actual_robot_move = {
                 axis: "ArmBase2",
                 axisIndex: 0,

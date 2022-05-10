@@ -5,15 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RemoteRobot</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+      *{
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
     <div class="app">
-      <!-- <iframe class="robot" src="http://192.168.16.230:1234" frameborder="0" height="100%" width="100%"></iframe> -->
-
       <div id="robot"></div>
       <div id="controls"></div>
-      
     </div>
     <script type="module" src="./robot.js"></script>
   </body>

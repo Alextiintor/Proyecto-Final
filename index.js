@@ -407,7 +407,7 @@ function moveLocalRobot(){
  */
 function moveRemoteRobot(){
   fixInfiniteRotate();
-  socket.emit("moveRemoteRobot", window.actual_robot_move);
+  socket.emit("clientMoveRemoteRobot", window.actual_robot_move);
 }
 
 function fixInfiniteRotate(){
