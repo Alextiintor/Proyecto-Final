@@ -90,42 +90,11 @@ let look_z = 0;
     renderer.render(scene, camera);
     
     // controls
-    //var controls = new OrbitControls(camera, renderer.domElement);
     var controls = new MapControls(camera, renderer.domElement);
     controls.target.set(look_x, look_y, look_z);
     controls.update();
-    // var controls = new THREE.OrbitControls(camera, renderer.domElement);
  
     // app loop
-    
-
-    // socket.on("serverMovesRobot",(direction)=>{
-    //     if (window.rotate_y_left) window.rotate_y_left = false;
-    //     if (window.rotate_y_right) window.rotate_y_right = false;
-
-    //     if (direction=="upAxis") {
-    //         if (window.upAxisCount == 0) {
-    //             changeAxis(1)
-    //             window.upAxisCount += 1;
-    //         }
-    //         if (window.downAxisCount > 0) window.downAxisCount = 0;
-    //     }else if(direction=="downAxis"){
-    //         if (window.downAxisCount == 0)  {
-    //             changeAxis(-1)
-    //             window.downAxisCount += 1;
-    //         }
-    //         if (window.upAxisCount > 0) window.upAxisCount = 0;
-
-    //     }else{
-    //         //set axis count to 0
-    //         if (window.downAxisCount > 0) window.downAxisCount = 0;
-    //         if (window.upAxisCount > 0) window.upAxisCount = 0;
-
-    //         if(direction=="moveLeft") window.rotate_y_left = true;
-    //         else if(direction=="moveRight") window.rotate_y_right = true;
-    //     }
-       
-    // });
 
     // CREATE A COLLADALOADER INSTANCE
     var loader = new ColladaLoader();
@@ -143,10 +112,23 @@ let look_z = 0;
 
 
         print_model_information();
+        
+        /**
+         * Crea los ejes que rotaran, arreglando asi el fallo de rotacion sobre el centro de la escena
+         */
+        //set pivot2
+        createPivot("2",5,0)
+        
+        //set pivot3
+        createPivot("3",29.2,0)
 
-        //Create pivot points 
-        setPivots();
+        //set pivot4
+        createPivot("4",51.7,0)
 
+        //set pivot5
+        createPivot("5",51.7,6.5)
+
+        
         //Create Controls
         // var gui = createControls();
 
@@ -156,7 +138,14 @@ let look_z = 0;
     var loop = function () {
         let posPivot = 0;
         // camera.lookAt(look_x, look_y, look_z);
+
+        //Comprueba el eje del robot, en el if comprueba si es la base sino son el resto de ejes
         if (window.actualAxisIndex==0) {
+            /**
+             * Comprueba si hay alguna variable en T/F, 
+             * Mientras este en true el robot girara sumandole 0.01 a la posicion de la rotacion actual
+             * en este caso y
+             */
             if(window.rotate_y_left == true){
                 window.robot_parts[window.actualAxis].rotation.y+=0.01;
             }
@@ -172,8 +161,17 @@ let look_z = 0;
             }
 
         } else {
+            /**
+             * posPivot busca el pivot dentro del eje actual,
+             * children es un array de objetos entre los cuales, esta el pivot en la ultima posicion siempre
+             */
             posPivot = window.robot_parts[window.actualAxis].children.length -1;
 
+            /**
+             * Comprueba si hay alguna variable en T/F, 
+             * Mientras este en true el robot girara sumandole 0.01 a la posicion de la rotacion actual
+             * en este caso Y para el ultimo eje (4) y Z para el resto de ejes
+             */
             if(window.rotate_y_left == true){
                 window.robot_parts[window.actualAxis].children[posPivot].rotation.y+=0.01;
             }
@@ -194,6 +192,12 @@ let look_z = 0;
                 z: window.robot_parts[window.actualAxis].children[posPivot].rotation.z
             }
         }
+
+        /**
+         * Si la diferencia (en milisegundos)
+         * de la fecha actual y el ultimo movimiento supera los 100 milisegundos,
+         * detiene cualquier movimiento en cualquier direccion y cualquier gesto
+         */
         if(Date.now() - window.lastMovement > 100){
             window.rotate_y_left = false;
             window.rotate_y_right = false;
@@ -208,10 +212,6 @@ let look_z = 0;
         requestAnimationFrame(loop);
         renderer.render(scene, camera);
         controls.update();
-
-        // if(window.boxHelper){
-        //     window.boxHelper.update();
-        // }
     };
  
 }());
@@ -239,40 +239,27 @@ function recursive_robot_print(object_group, componentsArray){
     return componentsArray;
 }
 
-function setPivots(){
-    //set pivot2
+function createPivot(number,y,z){
+    //crear pivot y agregarle un nombre
     var pivot = new THREE.Object3D();
-    pivot.name = "pivot2"
-    pivot.position.set(0,5,0);
-    window.robot_parts["ArmBase2"].add(pivot)
-    window.robot_parts["SubArm2"].position.set(0,-5,0)
-    pivot.add(window.robot_parts["SubArm2"])
+    pivot.name = "pivot"+number
 
-    //set pivot3
-    var pivot2 = new THREE.Object3D();
-    pivot2.name = "pivot2"
-    pivot2.position.set(0,29.2,0);
-    window.robot_parts["ArmBase3"].add(pivot2)
-    window.robot_parts["SubArm3"].position.set(0,-29.2,0)
-    pivot2.add(window.robot_parts["SubArm3"])
+    //situar el pivot para que rote en la altura que debe
+    pivot.position.set(0,y,-z);
 
-    //set pivot4
-    var pivot3 = new THREE.Object3D();
-    pivot3.name = "pivot3"
-    pivot3.position.set(0,51.7,0);
-    window.robot_parts["ArmBase4"].add(pivot3)
-    window.robot_parts["SubArm4"].position.set(0,-51.7,0)
-    pivot3.add(window.robot_parts["SubArm4"])
+    //Agregar a la base del brazo el pivot
+    window.robot_parts["ArmBase"+number].add(pivot)
 
-    //set pivot5
-    var pivot4 = new THREE.Object3D();
-    pivot4.name = "pivot4"
-    pivot4.position.set(0,51.7,-6.5);
-    window.robot_parts["ArmBase5"].add(pivot4)
-    window.robot_parts["SubArm5"].position.set(0,-51.7,6.5)
-    pivot4.add(window.robot_parts["SubArm5"])
+    //restar la altura del pivot al brazo que rotara
+    window.robot_parts["SubArm"+number].position.set(0,-y,z)
+
+    //agregar al pivot el brazo que rotara
+    pivot.add(window.robot_parts["SubArm"+number])
 }
 
+/**
+ * Crear los controles para entorno de pruebas, no afecta en nada si no se llama
+ */
 function createControls() {
     var gui = new dat.GUI();
     

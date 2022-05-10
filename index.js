@@ -7,7 +7,8 @@ import * as fp from "fingerpose";
 import * as robotGestures from './Gestures/index'
 import { io } from 'socket.io-client'
 
-//const socket = io("localhost:8000");
+const socket = io("localhost:8000");
+
 window.lastMovement = Date.now()
 window.finalGestureName = "idle"
 window.leftHandGesture = "idle"
@@ -326,9 +327,13 @@ function moveLocalRobot(){
 }
 
 function moveRemoteRobot(){
+  fixInfiniteRotate();
+  socket.emit("moveRemoteRobot", window.actual_robot_move);
+}
+
+function fixInfiniteRotate(){
   //Vuelta completa es 6.28==0 || -6.28==0 
   let fullTurn = 6.28
-  
 
   if (window.last_robot_move.z == window.actual_robot_move.z && window.last_robot_move.y == window.actual_robot_move.y) return
 
@@ -346,8 +351,6 @@ function moveRemoteRobot(){
       window.robot_parts[window.actualAxis].rotation.y = parseFloat(window.actual_robot_move.y)-6.28;
       console.log(window.actual_robot_move.y)
     }
-    
-    console.log(window.actual_robot_move.y)
   } else {
 
     let posPivot = window.robot_parts[window.actualAxis].children.length -1;
@@ -362,8 +365,6 @@ function moveRemoteRobot(){
         window.robot_parts[window.actualAxis].children[posPivot].rotation.y = parseFloat(window.actual_robot_move.y)-6.28;
         console.log(window.actual_robot_move.y)
       }
-
-      console.log(window.actual_robot_move.y)
     }else{
       //position z
       if (parseFloat(window.actual_robot_move.z) < -6.28) {
@@ -375,8 +376,6 @@ function moveRemoteRobot(){
         window.robot_parts[window.actualAxis].children[posPivot].rotation.z = parseFloat(window.actual_robot_move.z)-6.28;
         console.log(window.actual_robot_move.z)
       }
-      
-      console.log(window.actual_robot_move.z)
     }
   }
 }
