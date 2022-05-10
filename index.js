@@ -20,6 +20,8 @@ const canvas = document.querySelector("#pose-canvas")
 const ctx = canvas.getContext("2d")
 const left_result = document.querySelector("#left_result")
 const right_result = document.querySelector("#right_result")
+const state = document.querySelector('#state')
+
 let createdIntervalMoveRobot = false
 
 let detecting2Hands = false
@@ -117,6 +119,8 @@ async function main() {
       checkStop();
       //Mover el robot local
       moveLocalRobot();
+      let stateText = isStoped ? "Pausado" : "Funcionando";
+      state.textContent = "Estado: "+stateText 
 
     } else {
       //Establecer el texto por defecto cuando no hay ninguna mano en pantalla
