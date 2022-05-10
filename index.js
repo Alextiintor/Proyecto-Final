@@ -359,28 +359,64 @@ function moveLocalRobot(){
   //moveRemoteRobot()
   if (createdIntervalMoveRobot==false) {
     createdIntervalMoveRobot = true;
-    var moveRobotInterval = window.setInterval(moveRemoteRobot, 50);
+    var moveRobotInterval = window.setInterval(moveRemoteRobot, 150);
   }
 }
 
 function moveRemoteRobot(){
   //Vuelta completa es 6.28==0 || -6.28==0 
   let fullTurn = 6.28
-  console.log("moveRemoteRobot")
+  
 
   if (window.last_robot_move.z == window.actual_robot_move.z && window.last_robot_move.y == window.actual_robot_move.y) return
 
-  
-  //si el robot da mas de una vuelta, resta el valor de una vuelta para reiniciar, en ambos direcciones (L,R)
-  if (window.actual_robot_move < -fullTurn) {
-    window.actual_robot_move += fullTurn;
+  //si el robot da mas de una vuelta, resta el valor de una vuelta para reiniciar, en ambos direcciones (L,R)) 
+
+  //Reset position robot
+  if (window.actualAxisIndex == 0) {
+    //position y
+    if (parseFloat(window.actual_robot_move.y) < -6.28) {
+      window.robot_parts[window.actualAxis].rotation.y = parseFloat(window.actual_robot_move.y)+6.28;
+      console.log(window.actual_robot_move.y)
+    }
+
+    if (parseFloat(window.actual_robot_move.y) > 6.28) {
+      window.robot_parts[window.actualAxis].rotation.y = parseFloat(window.actual_robot_move.y)-6.28;
+      console.log(window.actual_robot_move.y)
+    }
+    
+    console.log(window.actual_robot_move.y)
+  } else {
+
+    let posPivot = window.robot_parts[window.actualAxis].children.length -1;
+    if (window.actualAxisIndex==4) {
+      //position y
+      if (parseFloat(window.actual_robot_move.y) < -6.28) {
+        window.robot_parts[window.actualAxis].children[posPivot].rotation.y = parseFloat(window.actual_robot_move.y)+6.28;
+        console.log(window.actual_robot_move.y)
+      }
+
+      if (parseFloat(window.actual_robot_move.y) > 6.28) {
+        window.robot_parts[window.actualAxis].children[posPivot].rotation.y = parseFloat(window.actual_robot_move.y)-6.28;
+        console.log(window.actual_robot_move.y)
+      }
+
+      console.log(window.actual_robot_move.y)
+    }else{
+      //position z
+      if (parseFloat(window.actual_robot_move.z) < -6.28) {
+        window.robot_parts[window.actualAxis].children[posPivot].rotation.z = parseFloat(window.actual_robot_move.z)+6.28;
+        console.log(window.actual_robot_move.z)
+      }
+
+      if (parseFloat(window.actual_robot_move.z) > 6.28) {
+        window.robot_parts[window.actualAxis].children[posPivot].rotation.z = parseFloat(window.actual_robot_move.z)-6.28;
+        console.log(window.actual_robot_move.z)
+      }
+      
+      console.log(window.actual_robot_move.z)
+    }
   }
-
-  if (window.actual_robot_move > fullTurn) {
-    window.actual_robot_move -= fullTurn;
-  }
-
-
 }
 
 function stopMove(){

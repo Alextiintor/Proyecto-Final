@@ -164,7 +164,7 @@ let look_z = 0;
                 window.robot_parts[window.actualAxis].rotation.y-=0.01;
             }
             
-            window.actual_move_robot = {
+            window.actual_robot_move = {
                 axis: window.actualAxis,
                 axisIndex: window.actualAxisIndex,
                 y: window.robot_parts[window.actualAxis].rotation.y,
@@ -187,7 +187,7 @@ let look_z = 0;
                 window.robot_parts[window.actualAxis].children[posPivot].rotation.z-=0.01;
             }
 
-            window.actual_move_robot = {
+            window.actual_robot_move = {
                 axis: window.actualAxis,
                 axisIndex: window.actualAxisIndex,
                 y: window.robot_parts[window.actualAxis].children[posPivot].rotation.y,
