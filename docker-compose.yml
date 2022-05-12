@@ -1,0 +1,11 @@
+version: '2'
+services:
+  client:
+    build: .
+    container_name: client_Container
+  remoteRobot:
+    container_name: remoteRobot_Container
+    build: ./remoteRobot
+  server:
+    container_name: server_Container
+    build: ./server

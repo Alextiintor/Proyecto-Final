@@ -39,7 +39,12 @@ const fullGestures = [
   robotGestures.moveLeft,
   robotGestures.moveRight,
   robotGestures.stop,
-  robotGestures.resume
+  robotGestures.resume,
+  robotGestures.four,
+  robotGestures.three,
+  robotGestures.two,
+  robotGestures.rock,
+  robotGestures.spock
 ]
 
 const rightGestures = [
@@ -229,6 +234,7 @@ function setHandsKeyPoints(predictions){
        * Estimate right hand Gestures
        */
       estimatedRightHandGesture = fullGE.estimate(rightHandKeypointsArray, 9)
+      console.log(estimatedRightHandGesture);
     }
   }
 }
